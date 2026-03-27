@@ -1,0 +1,5 @@
+if(EXISTS "/home/linux/Projeto-DeSCin/build/descin_tests[1]_tests.cmake")
+  include("/home/linux/Projeto-DeSCin/build/descin_tests[1]_tests.cmake")
+else()
+  add_test(descin_tests_NOT_BUILT descin_tests_NOT_BUILT)
+endif()
