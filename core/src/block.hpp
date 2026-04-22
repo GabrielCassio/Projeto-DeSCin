@@ -29,8 +29,8 @@ private:
 
 public:
   // Constrcutor and destructor
-  Block();
-  virtual ~Block();
+  Block(){};
+  virtual ~Block() {};
 };
 
 #endif

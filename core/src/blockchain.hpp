@@ -17,7 +17,7 @@ private:
 public:
   Blockchain(int diff = 4);
   std::vector<Block *> get_chain(void) const { return chain; }
-  const Block create_genesis_block();
+  Block create_genesis_block();
 };
 
 #endif // BLOCKCHAIN_HPP

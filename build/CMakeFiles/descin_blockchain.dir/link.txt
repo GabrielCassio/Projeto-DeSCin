@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/descin_blockchain.dir/src/main.cpp.o -o descin_blockchain  /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so -lpthread 
