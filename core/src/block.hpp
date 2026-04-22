@@ -1,17 +1,36 @@
+/*
+ *   block.hpp Estruturando a classe bloco/base para todo o sistema de
+ * blockchain
+ *
+ */
+
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
+// Importing default libraries
+#include <string>
+
 class Block {
 private:
-  int difficulty = 0;
-  long long timestamp = 0;
-  long long nonce = 0;
+  // Data structs to the clss
+  struct Header {
+    long nonce;
+    std::string hash_block;
+  };
+
+  struct Payload {
+    long sequence;
+    long timestamp;
+    // Data data; // Ainda não defini o tipo de data
+    std::string before_hashing;
+  };
+  Header header;
+  Payload payload;
 
 public:
   // Constrcutor and destructor
-  Block(int diff = 4) : difficulty(diff) {};
-  ~Block();
-  void calculateHash() {}
+  Block();
+  virtual ~Block();
 };
 
 #endif
