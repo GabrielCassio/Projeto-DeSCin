@@ -1,19 +1,29 @@
 // Importing our hpp libraries
 #include "block.hpp"
 #include "blockchain.hpp"
+#include "utils/hash.hpp"
 // Importing built in libraries
 #include <iostream>
 
-using namespace std;
 #define endl '\n'
 
 int main(void) {
+    std::string mensagem = "Ola, OpenSSL em C++!";
 
-  int difficulty = 4; // Dificuldade para quebrar o hash do bloco
-  // Instancing base block of the blockchain
-  Blockchain *blockchain = new Blockchain(difficulty);
-  blockchain->create_genesis_block();
-  // cout << "" << endl;
+    try {
+        std::string hash_result = hash(mensagem);
+        std::cout << "Mensagem: " << mensagem << "\n";
+        std::cout << "SHA-256:  " << hash_result << "\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Erro: " << e.what() << "\n";
+        return 1;
+    }
+
+  // int difficulty = 4; // Dificuldade para quebrar o hash do bloco
+  // // Instancing base block of the blockchain
+  // Blockchain *blockchain = new Blockchain(difficulty);
+  // blockchain->create_genesis_block();
+  // std::cout << "" << std::endl;
 
   // // Num blocks of the chain
   // int num_blocks = 10;
@@ -25,7 +35,7 @@ int main(void) {
   //   chain = blockchain->send_block(mine_info.mined_block);
   // }
 
-  // cout << "---------- INITIAL BLOCKCHAIN -----------" << endl << chain <<
-  // endl;
+  // std::cout << "---------- INITIAL BLOCKCHAIN -----------" << std::endl << chain <<
+  // std::endl;
   return 0;
 }

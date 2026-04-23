@@ -53,6 +53,7 @@ set(BLOCK_FILES
 set(BLOCK_HEADER
     core/src/block.hpp
     core/src/blockchain.hpp
+    core/src/utils/hash.hpp
 )
 
 # Atribuindo arquivos correspondentes a criação do executável
@@ -76,10 +77,14 @@ enable_testing()
 
 set(run_tests descin_tests)
 
+set(BLOCK_FILES_TEST)
+
+set(BLOCK_HEADER_TEST)
+
 add_executable(${run_tests}
-    core/src/main.cpp
-    ${BLOCK_FILES}
-    ${BLOCK_HEADER}
+    core/src/main.test.cpp
+    ${BLOCK_FILES_TEST}
+    ${BLOCK_HEADER_TEST}
 )
 
 target_link_libraries(${run_tests} PRIVATE

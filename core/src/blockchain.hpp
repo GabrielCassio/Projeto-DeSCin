@@ -3,6 +3,8 @@
 
 // Importing hpps
 #include "block.hpp"
+// Importing external libraries
+
 // Importing standard libraries
 #include <chrono>
 #include <iostream>
@@ -17,7 +19,7 @@ private:
 public:
   Blockchain(int diff = 4);
   std::vector<Block *> get_chain(void) const { return chain; }
-  Block create_genesis_block();
+  const Block& create_genesis_block();
 };
 
 #endif // BLOCKCHAIN_HPP
