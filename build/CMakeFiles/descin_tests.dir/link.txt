@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/descin_tests.dir/src/main.cpp.o -o descin_tests  lib/libgtest_main.a -lpthread lib/libgtest.a 

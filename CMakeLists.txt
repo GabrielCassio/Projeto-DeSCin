@@ -15,13 +15,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(FetchContent)
 
 message(STATUS "Baixando nlohmann/json...")
-FetchContent_Declare(json
+FetchContent_Declare(json 
     URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
 )
 FetchContent_MakeAvailable(json)
 
 message(STATUS "Baixando Crow...")
-FetchContent_Declare(crow
+FetchContent_Declare(crow 
     URL https://github.com/CrowCpp/Crow/archive/refs/heads/master.zip
 )
 FetchContent_MakeAvailable(crow)
@@ -29,7 +29,7 @@ FetchContent_MakeAvailable(crow)
 # Para Edísio e os demais, a Biblioteca do OpenSSl é a única que não baixa via protocolo http
 # pois ela já pode existir em sistema linux/mac, então aqui é procurado apenas no sistema local
 # Dê preferência ao uso do Linux
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL REQUIRED) 
 
 FetchContent_Declare(
   googletest
@@ -44,29 +44,17 @@ set(executable_name descin_blockchain)
 # Definindo o nome do arquivo executável do Projeto_DeSCin
 add_executable(${executable_name})
 
-# Defininfo conjunto de arquivos para compilação
-set(BLOCK_FILES
-    core/src/block.cpp
-    core/src/blockchain.cpp
-)
-
-set(BLOCK_HEADER
-    core/src/utils/hash.cpp
-    core/src/utils/date.cpp
-)
-
 # Atribuindo arquivos correspondentes a criação do executável
 target_sources(${executable_name} PRIVATE
-    core/src/main.cpp
-    ${BLOCK_FILES}
-    ${BLOCK_HEADER}
+    src/main.cpp
+    #src/block.cpp
 )
 
 # Atribuindo as bibliotecas ao programa
 target_link_libraries(${executable_name} PRIVATE
     nlohmann_json::nlohmann_json
     Crow::Crow
-    OpenSSL::SSL
+    OpenSSL::SSL 
     OpenSSL::Crypto
     pthread
 )
@@ -76,17 +64,12 @@ enable_testing()
 
 set(run_tests descin_tests)
 
-set(BLOCK_FILES_TEST)
-
-set(BLOCK_HEADER_TEST)
-
-add_executable(${run_tests}
-    core/src/main.test.cpp
-    ${BLOCK_FILES_TEST}
-    ${BLOCK_HEADER_TEST}
+add_executable(${run_tests} 
+    src/main.cpp
+    #src/block.cpp
 )
 
-target_link_libraries(${run_tests} PRIVATE
+target_link_libraries(${run_tests} PRIVATE 
     gtest_main
     pthread
 )
