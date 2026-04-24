@@ -51,9 +51,8 @@ set(BLOCK_FILES
 )
 
 set(BLOCK_HEADER
-    core/src/block.hpp
-    core/src/blockchain.hpp
-    core/src/utils/hash.hpp
+    core/src/utils/hash.cpp
+    core/src/utils/date.cpp
 )
 
 # Atribuindo arquivos correspondentes a criação do executável

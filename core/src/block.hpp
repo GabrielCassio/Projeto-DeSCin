@@ -9,7 +9,6 @@
 
 // Importing default libraries
 #include <string>
-#include <chrono>
 #include <iostream>
 
 // Data structs to the clss
@@ -25,18 +24,28 @@ std::string data; // Ainda não defini o tipo de data
 std::string prev_hash;
 };
 
-  class Block {
+class Block {
 private:
   Header header;
   Payload payload;
-  // Private Methods
-  void set_timestamp(void);
 
 public:
   // Constrcutor and destructor
-  Block(const Payload& ps);
-  ~Block() {};
+  Block();
+  ~Block();
+
+  // Header methods
+  void set_header(const Header& hd);
+  Header get_header(void) const { return header;}
+
+  // Payload methods
+  void set_payload(const Payload& pd);
+  Payload get_payload(void) const { return payload;}
+  // Timestamp setting
+  void set_timestamp(void);
   time_t get_timestamp(void) const { return payload.timestamp; }
+
+  // Visual methods
   void display(void) const;
 };
 

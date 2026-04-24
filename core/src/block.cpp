@@ -1,16 +1,31 @@
 #include "block.hpp"
+#include "utils/date.hpp"
 
-Block::Block(const Payload& ps) : payload(ps) {
-    set_timestamp(); // Setting create time block
+Block::Block() {}
+
+Block::~Block(){}
+
+// Header methods
+void Block::set_header(const Header& hd) {
+    header = hd;
+}
+
+// Payload methods
+void Block::set_payload(const Payload& pd) {
+    payload = pd;
 }
 
 void Block::set_timestamp(void) {
-    auto current = std::chrono::system_clock::now();
-    std::time_t cur_time = std::chrono::system_clock::to_time_t(current);
-
-    this->payload.timestamp = cur_time;
+    payload.timestamp = date();
 }
 
 void Block::display(void) const {
-    std::cout << "Timestamp: " << std::ctime(&this->payload.timestamp);
+    std::cout   << "Header Block -----------------------" << std::endl
+                << "Nonce:\t" << header.nonce << std::endl
+                << "Hash do block:\t" << header.hash_block << std::endl << std::endl
+                << "Payload Block -----------------------" << std:: endl
+                << "Sequence:\t" << payload.sequence << std::endl
+                // << "Timestamp:\t" << payload.timestamp !=  ? std::ctime(payload.timestamp) << std::endl
+                << "Data:\t" << payload.data << std::endl
+                << "Prev_hash:\t" << payload.prev_hash << std::endl << std::endl;
 }
