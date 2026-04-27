@@ -17,8 +17,8 @@ int main(void) {
 
     Wallet wallet_sender, wallet_receiver;
 
-    std::string sender = wallet_sender.publicKey;
-    std::string receiver = wallet_receiver.publicKey;
+    std::string sender = wallet_sender.get_public_key();
+    std::string receiver = wallet_receiver.get_public_key();
 
     unsigned long amount = 1050;
     long long ts = date();
