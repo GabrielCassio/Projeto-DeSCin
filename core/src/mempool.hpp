@@ -7,7 +7,7 @@
 
 class Mempool {
 private:
-    std::deque<std::string> pending_transactions;
+    std::deque<Transaction> pending_transactions;
     // Precisa-se entender o modificar muteble e o tipo mutex
     mutable std::mutex mempool_mutex;
 

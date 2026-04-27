@@ -1,8 +1,12 @@
 #include "mempool.hpp"
+#include "transaction.hpp"
+#include <deque>
+#include <iostream>
 
 bool Mempool::add_transaction(const Transaction& tx) {
     // Check if the transaction is valid before adding it to the mempool
     if (!tx.is_transaction_valid()){
+        std::cout << "Transação inválida!" << std::endl;
         return false;
     }
 

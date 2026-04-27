@@ -6,38 +6,38 @@
 // Importing external libraries
 // Importing standard libraries
 #include <iostream>
+#include <memory>
 #include <vector>
+#include <deque>
 
 class Blockchain {
 private:
   int difficulty;
   char pow_prefix = '1';
-  std::vector<Block *> chain;
+  std::vector<std::shared_ptr<Block>> chain;
 
   /* Private methods */
   // Create blocks
-  Block* create_genesis_block(void);
+  std::shared_ptr<Block> create_genesis_block(void);
+  std::shared_ptr<Block> get_last_block(void) const;
+  std::string get_hash_last_block(void) const;
 
   // Validation Block
-  bool block_validation(Block& block) const;
-
-  Block& get_last_block(void) const;
-  std::string get_hash_last_block(void) const;
+  bool block_validation(const std::shared_ptr<Block>& block) const;
 
 public:
 // Blockchain constructor and destructor
   Blockchain(int diff = 4);
-  ~Blockchain();
+  ~Blockchain() = default;
 
   // Getters
   int get_difficulty(void) const { return difficulty; }
   char get_pow_prefix(void) const { return pow_prefix; }
 
   // Create block method
-  Block* create_block(const std::string& data);
-
-  Block* mining_block(Block& block);
-  std::vector<Block*> send_block(Block& block);
+  std::shared_ptr<Block> create_block(const std::deque<Transaction> &data_tx);
+  std::shared_ptr<Block> mining_block(const std::shared_ptr<Block> mining_block);
+  void send_block(std::shared_ptr<Block>);
 
   // Visualizating the blocks/chain
   void display(void) const;

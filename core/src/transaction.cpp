@@ -4,6 +4,7 @@
 #include "utils/hash.hpp"
 #include "utils/string_to_pbkey.hpp"
 #include "utils/decode_signature.hpp"
+#include "utils/openssl_utils.hpp"
 // Importing std libs
 #include <string>
 // Importing ext libs
@@ -12,27 +13,29 @@
 #include <openssl/err.h>
 
 // Constructor and destructor
-Transaction::Transaction(std::string sender_key, std::string receiver_key, long amount, long long timestamp, std::string signature)
-    : sender_key(sender_key), receiver_key(receiver_key), amount(amount), timestamp(timestamp), signature(signature) {
+Transaction::Transaction(std::string sender_key, std::string receiver_key, unsigned long amount, long long timestamp, std::string signature){
+        body.sender_key = sender_key;
+        body.receiver_key = receiver_key;
+        body.amount = amount;
+        body.timestamp = timestamp;
+        body.signature = signature;
         // Calcula o hash das informações da transação e armazena no membro transaction_hash
-        transaction_hash = calculate_hash();
+        body.transaction_hash = calculate_hash();
 }
-
-Transaction::~Transaction() {}
 
 // Transaction methods
 std::string Transaction::calculate_hash(void) const {
-    std::string data = sender_key + receiver_key + std::to_string(amount) + std::to_string(timestamp);
+    std::string data = body.sender_key + body.receiver_key + std::to_string(body.amount) + std::to_string(body.timestamp);
     return hash(data);
 }
 
 bool Transaction::is_transaction_valid(void) const {
 
     // Calcula os dados a serem verificados (sem o hash)
-    std::string verifying_data = sender_key + receiver_key + std::to_string(amount) + std::to_string(timestamp);
+    std::string verifying_data = body.sender_key + body.receiver_key + std::to_string(body.amount) + std::to_string(body.timestamp);
 
-    EVP_PKEYPtr pkey(string_to_pbkey(sender_key));
-    std::vector<unsigned char> sigBytes = decode_signature(signature);
+    EVP_PKEY_Ptr pkey(string_to_pbkey(body.sender_key));
+    std::vector<unsigned char> sigBytes = decode_signature(body.signature);
     if (!pkey) {
         return false;
     }
@@ -44,7 +47,7 @@ bool Transaction::is_transaction_valid(void) const {
         return false;
     }
 
-    if (EVP_DigestVerifyInit(context.get(), nullptr, EVP_sha256(), nullptr, pbkey) <= 0) {
+    if (EVP_DigestVerifyInit(context.get(), nullptr, EVP_sha256(), nullptr, pkey.get()) <= 0) {
         return false;
     }
 
