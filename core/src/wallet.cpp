@@ -10,7 +10,7 @@
 #include <string>
 
 // Wallet
-Wallet::Wallet(std::string wallet_id, double wallet_balance)
+Wallet::Wallet(std::string wallet_id, unsigned long wallet_balance)
     : wallet_id(wallet_id), wallet_balance(wallet_balance) {
         // Generate pair key
         pair_key = generate_key_pair();

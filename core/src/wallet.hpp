@@ -17,7 +17,7 @@ class Wallet {
         void set_balance(double amount);
 
     public:
-        Wallet(std::string wallet_id = "", double wallet_balance = 0);
+        Wallet(std::string wallet_id = "", unsigned long wallet_balance = 0);
         ~Wallet();
 
         // Getters of the wallet's key pair

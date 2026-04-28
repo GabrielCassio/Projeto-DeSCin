@@ -82,7 +82,14 @@ std::string Blockchain::get_hash_last_block() const {
 
 std::shared_ptr<Block> Blockchain::mining_block(std::shared_ptr<Block> mining_block) {
   Payload payload_data = mining_block->get_payload();
-  std::string  json_payload_data = json(payload_data).dump();
+
+    json j;
+    j["sequence"] = payload_data.sequence;
+    j["timestamp"] = payload_data.timestamp;
+    j["data"] = payload_data.data;
+    j["prev_hash"] = payload_data.prev_hash;
+
+  std::string json_payload_data = j.dump();
 
   // Mining the block
   long nonce = 0;
@@ -110,12 +117,18 @@ std::shared_ptr<Block> Blockchain::mining_block(std::shared_ptr<Block> mining_bl
   }
 }
 
-void Blockchain::send_block(std::shared_ptr<Block> block) {
-    if(block_validation(block)){
-        chain.push_back(block);
-        std::cout << "Bloco de sequencia: (" << block->get_payload().sequence << ") enviado com sucesso!" << std::endl
+bool Blockchain::send_block(std::shared_ptr<Block> block) {
+    try {
+        if(block_validation(block)){
+            chain.push_back(block);
+            std::cout << "Bloco de sequencia: (" << block->get_payload().sequence << ") enviado com sucesso!" << std::endl
                 << json(block->get_payload()).dump(4) << std::endl;
+            return true;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Erro ao enviar bloco: " << e.what() << std::endl;
     }
+    return false;
 }
 
 // Visual information about the chain

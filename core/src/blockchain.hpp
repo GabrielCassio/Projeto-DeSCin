@@ -38,7 +38,7 @@ public:
   // Create block method
   std::shared_ptr<Block> create_block(const std::deque<Transaction> &data_tx);
   std::shared_ptr<Block> mining_block(const std::shared_ptr<Block> mining_block);
-  void send_block(std::shared_ptr<Block>);
+  bool send_block(std::shared_ptr<Block>);
 
   // Visualizating the blocks/chain
   void display(void) const;
