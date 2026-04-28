@@ -3,8 +3,8 @@
 #include "transaction.hpp"
 //Utils
 #include "utils/date.hpp"
-#include "utils/hash.hpp"
-#include "utils/hash_validation.hpp"
+#include "utils/hashing/hash.hpp"
+#include "utils/hashing/hash_validation.hpp"
 
 // Importing exxternal libraries
 #include <nlohmann/json.hpp>
@@ -28,22 +28,6 @@ std::shared_ptr<Block> Blockchain::create_genesis_block(void) {
   std::deque<Transaction> gensis_tx;
   auto genesis_block = std::make_shared<Block>(0, "", gensis_tx);
 
-  // // Carrying infos by initial block of the chain
-  // Payload payload_gen;
-  // payload_gen.sequence = 0;
-  // payload_gen.timestamp = date();
-  // payload_gen.data = ;
-  // payload_gen.prev_hash = "";
-
-  // // Defining initial header by genesis_block
-  // Header header_gen;
-  // header_gen.nonce = 0;
-  // header_gen.hash_block = genesis_block->calculate_hash_block();
-
-  // // Setting payload and header for genesis block
-  // genesis_block->set_payload(payload_gen);
-  // genesis_block->set_header(header_gen);
-
   std::cout << "Genesis Block ----------" << std::endl;
   // Visualisating infos by genesis block
   genesis_block->display();
@@ -58,22 +42,6 @@ std::shared_ptr<Block> Blockchain::create_block(const std::deque<Transaction> &d
     std::string last_hash = last_block->get_header().hash_block;
     // Instantiate the new block
     auto new_block = std::make_shared<Block>(next_sequence, last_hash, data_tx);
-
-  // Payload payload_new_block;
-  // // Getting the sequence of the last block
-  // payload_new_block.sequence = ;
-  // payload_new_block.timestamp = date();
-  // payload_new_block.data = data;
-  // payload_new_block.prev_hash = get_hash_last_block();
-
-  // // Calculating the hash of the new block and setting the header
-  // Header header_new_block;
-  // header_new_block.nonce = 0;
-  // header_new_block.hash_block = new_block->calculate_hash_block();
-
-  // // Setting the payload and header of the new block
-  // new_block->set_payload(payload_new_block);
-  // new_block->set_header(header_new_block);
 
   std::cout << "Bloco criado! " << std::endl;
   std::cout << json(new_block->get_header()).dump() << std::endl;
@@ -114,7 +82,14 @@ std::string Blockchain::get_hash_last_block() const {
 
 std::shared_ptr<Block> Blockchain::mining_block(std::shared_ptr<Block> mining_block) {
   Payload payload_data = mining_block->get_payload();
-  std::string  json_payload_data = json(payload_data).dump();
+
+    json j;
+    j["sequence"] = payload_data.sequence;
+    j["timestamp"] = payload_data.timestamp;
+    j["data"] = payload_data.data;
+    j["prev_hash"] = payload_data.prev_hash;
+
+  std::string json_payload_data = j.dump();
 
   // Mining the block
   long nonce = 0;
@@ -142,12 +117,18 @@ std::shared_ptr<Block> Blockchain::mining_block(std::shared_ptr<Block> mining_bl
   }
 }
 
-void Blockchain::send_block(std::shared_ptr<Block> block) {
-    if(block_validation(block)){
-        chain.push_back(block);
-        std::cout << "Bloco de sequencia: (" << block->get_payload().sequence << ") enviado com sucesso!" << std::endl
+bool Blockchain::send_block(std::shared_ptr<Block> block) {
+    try {
+        if(block_validation(block)){
+            chain.push_back(block);
+            std::cout << "Bloco de sequencia: (" << block->get_payload().sequence << ") enviado com sucesso!" << std::endl
                 << json(block->get_payload()).dump(4) << std::endl;
+            return true;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Erro ao enviar bloco: " << e.what() << std::endl;
     }
+    return false;
 }
 
 // Visual information about the chain
