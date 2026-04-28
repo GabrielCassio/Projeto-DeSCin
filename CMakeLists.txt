@@ -53,6 +53,10 @@ set(BLOCK_FILES
     core/src/wallet.cpp
 )
 
+set(API_FILES
+    core/src/api/middleware/auth_middleware.cpp
+)
+
 set(UTILS_FILES
     core/src/utils/hashing/hash.cpp
     core/src/utils/encryptation/decode_signature.cpp
@@ -62,6 +66,7 @@ set(UTILS_FILES
 target_sources(${executable_name} PRIVATE
     core/src/main.cpp
     ${BLOCK_FILES}
+    ${API_FILES}
     ${UTILS_FILES}
 )
 

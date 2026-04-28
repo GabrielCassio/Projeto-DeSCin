@@ -48,43 +48,43 @@ void Wallet::check_balance() {}
 void Wallet::change_balance(double amount) {}
 
 // Buy
-Buy::Buy(Wallet& origin, Wallet& destination)
-    : Wallet(origin.get_id(), origin.get_balance()), destination(destination) {}
+// Buy::Buy(Wallet& origin, Wallet& destination)
+//     : Wallet(origin.get_id(), origin.get_balance()), destination(destination) {}
 
-Buy::~Buy() {}
+// Buy::~Buy() {}
 
-void Buy::check_balance() {}
+// void Buy::check_balance() {}
 
-void Buy::change_balance(double amount) {
-    if (get_balance() >= amount) {
-        set_balance(get_balance() - amount);
-        destination.receive(amount);
-    } else {
-        std::cout << "Not enough balance" << std::endl;
-    }
-}
+// void Buy::change_balance(double amount) {
+//     if (get_balance() >= amount) {
+//         set_balance(get_balance() - amount);
+//         destination.receive(amount);
+//     } else {
+//         std::cout << "Not enough balance" << std::endl;
+//     }
+// }
 
-void Buy::transaction_execute(double amount) {
-    change_balance(amount);
-}
+// void Buy::transaction_execute(double amount) {
+//     change_balance(amount);
+// }
 
 // Sell
-Sell::Sell(Wallet& origin, Wallet& destination)
-    : Wallet(origin.get_id(), origin.get_balance()), destination(destination) {}
+// Sell::Sell(Wallet& origin, Wallet& destination)
+//     : Wallet(origin.get_id(), origin.get_balance()), destination(destination) {}
 
-Sell::~Sell() {}
+// Sell::~Sell() {}
 
-void Sell::check_balance() {}
+// void Sell::check_balance() {}
 
-void Sell::change_balance(double amount) {
-    if (get_balance() >= amount) {
-        set_balance(get_balance() - amount);
-        destination.receive(amount);
-    } else {
-        std::cout << "Not enough balance" << std::endl;
-    }
-}
+// void Sell::change_balance(double amount) {
+//     if (get_balance() >= amount) {
+//         set_balance(get_balance() - amount);
+//         destination.receive(amount);
+//     } else {
+//         std::cout << "Not enough balance" << std::endl;
+//     }
+// }
 
-void Sell::transaction_execute(double amount) {
-    change_balance(amount);
-}
+// void Sell::transaction_execute(double amount) {
+//     change_balance(amount);
+// }

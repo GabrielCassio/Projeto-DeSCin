@@ -17,6 +17,11 @@ void register_project_routes(App& app, std::shared_ptr<ChainAdapter> bc) {
     CROW_ROUTE(app, "/api/projects")
     .CROW_MIDDLEWARES(app, AuthMiddleware)
     ([bc](const crow::request& req) {
+        crow::response res;
+        res.add_header("Access-Control-Allow-Origin", "*"); // Permite qualquer origem (para desenvolvimento)
+        res.add_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        res.add_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
         std::string status_filter = "";
         auto f = req.url_params.get("status");
         if (f) status_filter = f;
