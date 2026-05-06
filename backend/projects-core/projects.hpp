@@ -1,5 +1,8 @@
-#ifndef PROJECT_REPOSITORY_HPP
-#define PROJECT_REPOSITORY_HPP
+#ifndef PROJECTS_HPP
+#define PROJECTS_HPP
+/*
+ *  Classe que 
+ */
 
 // Importing std libraries
 #include <unordered_map>
@@ -62,8 +65,8 @@ private:
 public:
     
     // Constructors e Destructors methods
-    ProjectRepository();
-    ~ProjectRepository() = default;
+    Project();
+    ~Project() = default;
 
     // Project Methods
     std::vector<ProjectsBody> get_projects(const std::string& status_filter = "") const;
@@ -86,4 +89,4 @@ public:
     std::vector<InvestimentBody> investments_for(const std::string& id) const;
 };
 
-#endif // PROJECT_REPOSITORY_HPP
+#endif // PROJECTS_HPP
