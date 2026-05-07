@@ -84,11 +84,13 @@ processors=2
 
 # Espelhando portas de rede do WSL com o Windows
 networkingMode=mirrored
+
+# Reinicie o WSL no Bash
+wsl --shutdown
 ```
 
 ##  4. Compilar o Projeto (Build)
 Utilizamos o CMake para baixar automaticamente as bibliotecas externas (Crow API e GoogleTest) e compilar o código.
-
 
 ````Bash
 # 1. Gera os arquivos de configuração de build na pasta 'build'
