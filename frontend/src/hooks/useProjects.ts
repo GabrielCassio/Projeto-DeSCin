@@ -1,22 +1,7 @@
-import { useState, useEffect } from 'react';
-import type { Project } from '../types';
-import { projectsService } from '../services/projects';
+import { useProjectStore } from '../stores/project.store';
+import type { LiveProject } from '../stores/project.store';
 
-export function useProjects() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    projectsService
-      .getAll()
-      .then(data => { if (!cancelled) setProjects(data); })
-      .catch(() => { if (!cancelled) setError('Falha ao carregar projetos'); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
-
-  return { projects, loading, error };
+export function useProjects(): { projects: LiveProject[]; loading: boolean; error: string | null } {
+  const projects = useProjectStore(s => s.projects);
+  return { projects, loading: false, error: null };
 }

@@ -1,3 +1,4 @@
+import { useProjectStore } from '../../stores/project.store';
 import { DSC_INDEX_DATA } from '../../mocks/dashboard';
 
 const GLASS: React.CSSProperties = {
@@ -10,12 +11,11 @@ const GLASS: React.CSSProperties = {
   overflow: 'hidden',
 };
 
-const STATS = [
-  { label: 'Volume 24h',      value: 'R$ 892K',  sub: '+12.4% vs ontem' },
-  { label: 'Transações',      value: '1.247',    sub: 'últimas 24h'     },
-  { label: 'Projetos ativos', value: '127',      sub: '8 universidades' },
-  { label: 'Carteiras únicas',value: '4.832',    sub: '+38 hoje'        },
-];
+function fmtVol(v: number): string {
+  if (v >= 1_000_000) return `R$ ${(v / 1_000_000).toFixed(2)}M`;
+  if (v >= 1_000) return `R$ ${Math.round(v / 1_000)}K`;
+  return `R$ ${Math.round(v)}`;
+}
 
 function Sparkline() {
   const pts = DSC_INDEX_DATA;
@@ -59,6 +59,18 @@ function Sparkline() {
 }
 
 export function MarketStats() {
+  const projects = useProjectStore(s => s.projects);
+  const approved = projects.filter(p => p.status === 'approved');
+  const totalVol = approved.reduce((sum, p) => sum + (p.volume24h || 0), 0);
+  const activeCount = approved.length;
+
+  const stats = [
+    { label: 'Volume 24h',       value: fmtVol(totalVol),         sub: 'soma de todos os projetos' },
+    { label: 'Projetos ativos',  value: String(activeCount),       sub: '8 universidades'           },
+    { label: 'Carteiras únicas', value: '4.832',                   sub: '+38 hoje'                  },
+    { label: 'DSC Index',        value: DSC_INDEX_DATA[DSC_INDEX_DATA.length - 1].value.toFixed(0), sub: 'índice geral do mercado' },
+  ];
+
   return (
     <div style={{ ...GLASS, padding: '24px 24px 20px', display: 'flex', flexDirection: 'column', gap: 0 }}>
       <h3 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-primary)', marginBottom: 20 }}>
@@ -67,7 +79,7 @@ export function MarketStats() {
 
       {/* 2×2 stat grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
-        {STATS.map(({ label, value, sub }) => (
+        {stats.map(({ label, value, sub }) => (
           <div key={label}>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: 4 }}>
               {label}

@@ -27,3 +27,10 @@ export function getProjectGradient(ticker: string): string {
   const sum = ticker.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   return CARD_GRADIENTS[sum % CARD_GRADIENTS.length];
 }
+
+const ALLOC_COLORS = ['#1A1A17', '#3A3A3D', '#5C5C56', '#8E8E85', '#B8B8B0'];
+
+export function getAllocationColor(index: number, isLargest: boolean): string {
+  if (isLargest) return '#E5251A';
+  return ALLOC_COLORS[index % ALLOC_COLORS.length];
+}

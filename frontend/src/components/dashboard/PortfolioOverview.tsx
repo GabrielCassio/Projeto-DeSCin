@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, Plus, Compass } from 'lucide-react';
+import { ArrowUpRight, Compass, Wallet } from 'lucide-react';
 
 function useCount(target: number, delay = 0) {
   const [val, setVal] = useState(0);
@@ -85,21 +85,19 @@ export function PortfolioOverview() {
       {/* Actions */}
       <div style={{ display: 'flex', gap: 10 }}>
         {[
-          { label: '+ Depositar', primary: true, icon: <Plus size={13} />, path: '/depositar' },
-          { label: 'Explorar',    primary: false, icon: <Compass size={13} />, path: '/explorar' },
-        ].map(({ label, primary, icon, path }) => (
+          { label: 'Carteira',  icon: <Wallet size={13} />,  path: '/carteira'  },
+          { label: 'Explorar', icon: <Compass size={13} />, path: '/explorar' },
+        ].map(({ label, icon, path }) => (
           <button
             key={label}
             onClick={() => navigate(path)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 7, height: 42, padding: '0 18px',
-              borderRadius: 11, border: primary ? 'none' : '1.5px solid var(--rule)',
-              background: primary ? 'var(--ink-primary)' : 'transparent',
-              color: primary ? 'var(--bg-form)' : 'var(--ink-primary)',
+              borderRadius: 11, border: '1.5px solid var(--rule)',
+              background: 'transparent', color: 'var(--ink-primary)',
               fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600,
               letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
-              transition: 'transform 120ms ease, box-shadow 200ms ease',
-              boxShadow: primary ? '0 4px 14px rgba(10,10,10,0.16)' : 'none',
+              transition: 'transform 120ms ease',
             }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MOCK_TOP_ALTA, MOCK_TOP_BAIXA, MOCK_TOP_VOL, type TopMover } from '../../mocks/dashboard';
+import { useProjectStore } from '../../stores/project.store';
 
 type Tab = 'alta' | 'baixa' | 'volume';
 
@@ -9,15 +9,35 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'volume', label: 'Volume'   },
 ];
 
-const DATA: Record<Tab, TopMover[]> = {
-  alta: MOCK_TOP_ALTA,
-  baixa: MOCK_TOP_BAIXA,
-  volume: MOCK_TOP_VOL,
-};
+function fmtVol(v: number): string {
+  if (v >= 1_000_000) return `R$ ${(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000) return `R$ ${Math.round(v / 1_000)}K`;
+  return `R$ ${Math.round(v)}`;
+}
 
 export function TopMovers() {
   const [tab, setTab] = useState<Tab>('alta');
-  const items = DATA[tab];
+  const projects = useProjectStore(s => s.projects);
+
+  const approved = projects.filter(p => p.status === 'approved');
+
+  const items = (() => {
+    if (tab === 'alta') {
+      return [...approved]
+        .filter(p => p.change24h >= 0)
+        .sort((a, b) => b.change24h - a.change24h)
+        .slice(0, 5);
+    }
+    if (tab === 'baixa') {
+      return [...approved]
+        .filter(p => p.change24h < 0)
+        .sort((a, b) => a.change24h - b.change24h)
+        .slice(0, 5);
+    }
+    return [...approved]
+      .sort((a, b) => b.volume24h - a.volume24h)
+      .slice(0, 5);
+  })();
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.32)', backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)', border: '1px solid rgba(20,20,20,0.08)', borderRadius: 20, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65), 0 4px 16px rgba(20,20,20,0.05)', overflow: 'hidden' }}>
@@ -48,24 +68,30 @@ export function TopMovers() {
 
       {/* Items */}
       <div style={{ padding: '4px 24px 20px' }}>
-        {items.map((m, i) => {
-          const pos = m.change >= 0;
+        {items.length === 0 && (
+          <div style={{ padding: '24px 0', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--ink-muted)', textAlign: 'center' }}>
+            —
+          </div>
+        )}
+        {items.map((p, i) => {
+          const code = p.ticker.replace('PROJ:', '');
+          const pos = p.change24h >= 0;
           return (
-            <div key={m.code + i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: i < items.length - 1 ? '1px solid var(--rule)' : 'none' }}>
+            <div key={p.ticker} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: i < items.length - 1 ? '1px solid var(--rule)' : 'none' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: 'var(--ink-muted)', fontVariantNumeric: 'tabular-nums', width: 16, flexShrink: 0 }}>
-                  {String(m.rank).padStart(2, '0')}
+                  {String(i + 1).padStart(2, '0')}
                 </span>
                 <div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', letterSpacing: '0.02em' }}>{m.code}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginTop: 2 }}>{m.university} · {m.area}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', letterSpacing: '0.02em' }}>{code}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginTop: 2 }}>{p.university} · {p.area}</div>
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: pos ? '#22c55e' : 'var(--red)' }}>
-                  {pos ? '+' : ''}{tab === 'volume' ? m.volume : `${m.change.toFixed(1)}%`}
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: tab === 'volume' ? 'var(--ink-primary)' : pos ? '#22c55e' : 'var(--red)' }}>
+                  {tab === 'volume' ? fmtVol(p.volume24h) : `${pos ? '+' : ''}${(p.change24h ?? 0).toFixed(1)}%`}
                 </div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontVariantNumeric: 'tabular-nums', color: 'var(--ink-secondary)', marginTop: 2 }}>R$ {m.price.toFixed(2)}</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontVariantNumeric: 'tabular-nums', color: 'var(--ink-secondary)', marginTop: 2 }}>R$ {(p.currentPrice ?? 0).toFixed(2)}</div>
               </div>
             </div>
           );

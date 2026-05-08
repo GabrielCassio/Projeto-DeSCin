@@ -88,6 +88,8 @@ export interface Transaction {
   timestamp: string;
   status: 'confirmed' | 'pending' | 'failed';
   counterparty?: string;
+  description?: string;
+  method?: 'pix' | 'bank';
 }
 
 export interface Asset {

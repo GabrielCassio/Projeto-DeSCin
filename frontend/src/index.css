@@ -256,11 +256,29 @@
 .dash-grid-84 { display: grid; grid-template-columns: 8fr 4fr; gap: 24px; }
 .dash-grid-3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
 
+/* ── Explorar / Projeto grids ── */
+.explore-grid  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.proj-main-grid { display: grid; grid-template-columns: 8fr 4fr; gap: 24px; align-items: start; }
+.proj-8-4      { display: grid; grid-template-columns: 8fr 4fr; gap: 32px; }
+.proj-2col     { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+@media (max-width: 1024px) {
+  .explore-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 880px) {
   .dash-grid-57,
   .dash-grid-75,
   .dash-grid-84,
-  .dash-grid-3 { grid-template-columns: 1fr; gap: 16px; }
+  .dash-grid-3,
+  .explore-grid,
+  .proj-main-grid,
+  .proj-8-4,
+  .proj-2col { grid-template-columns: 1fr; gap: 16px; }
+}
+
+@media (max-width: 640px) {
+  .proj-2col { grid-template-columns: 1fr; }
 }
 
 /* ── Page transition system ── */

@@ -468,7 +468,7 @@ export default function Explorar() {
           </div>
         ) : viewMode === 'grid' ? (
           /* Grid view */
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="resp-grid">
+          <div className="explore-grid">
             {filtered.map((project, i) => (
               <ProjectGridCard key={project.ticker} project={project} delay={i * 50} />
             ))}

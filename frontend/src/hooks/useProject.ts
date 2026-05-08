@@ -1,24 +1,17 @@
-import { useState, useEffect } from 'react';
-import type { Project } from '../types';
-import { projectsService } from '../services/projects';
+import { useProjectStore } from '../stores/project.store';
+import type { LiveProject } from '../stores/project.store';
 
-export function useProject(ticker: string | undefined) {
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!ticker) return;
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    projectsService
-      .getByTicker(ticker)
-      .then(data => { if (!cancelled) setProject(data); })
-      .catch(() => { if (!cancelled) setError('Projeto não encontrado'); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [ticker]);
-
-  return { project, loading, error };
+export function useProject(ticker: string | undefined): {
+  project: LiveProject | null;
+  loading: boolean;
+  error: string | null;
+} {
+  const project = useProjectStore(s =>
+    ticker ? (s.projects.find(p => p.ticker === ticker) ?? null) : null
+  );
+  return {
+    project,
+    loading: false,
+    error: project === null && !!ticker ? 'Projeto não encontrado' : null,
+  };
 }

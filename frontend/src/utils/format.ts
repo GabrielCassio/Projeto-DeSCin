@@ -35,3 +35,21 @@ export function truncateHash(hash: string): string {
   if (hash.length <= 16) return hash;
   return `${hash.slice(0, 10)}...${hash.slice(-6)}`;
 }
+
+export function formatRelativeTime(ts: number): string {
+  const diff = Date.now() - ts;
+  if (diff < 60_000)  return 'agora';
+  if (diff < 3_600_000) return `há ${Math.floor(diff / 60_000)} min`;
+  if (diff < 86_400_000) return `há ${Math.floor(diff / 3_600_000)}h`;
+  return `há ${Math.floor(diff / 86_400_000)} dias`;
+}
+
+export function generateHash(): string {
+  return '0x' + Array.from({ length: 64 }, () =>
+    Math.floor(Math.random() * 16).toString(16)
+  ).join('');
+}
+
+export function generateId(): string {
+  return Math.random().toString(36).slice(2, 11);
+}

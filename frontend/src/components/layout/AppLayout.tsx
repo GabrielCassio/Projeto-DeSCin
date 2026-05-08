@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/auth.store';
 import { useWallet } from '../../hooks/useWallet';
+import { useProjectStore } from '../../stores/project.store';
 import { cn } from '../../utils/cn';
 
 interface AppLayoutProps {
@@ -21,6 +22,11 @@ const maxWidths = {
 export function AppLayout({ children, requireAuth = true, maxWidth = 'xl' }: AppLayoutProps) {
   useWallet();
   const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    const id = setInterval(() => useProjectStore.getState().tick(), 3000);
+    return () => clearInterval(id);
+  }, []);
 
   if (requireAuth && !isAuthenticated) {
     return <Navigate to="/login" replace />;

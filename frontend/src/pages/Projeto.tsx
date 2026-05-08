@@ -1,5 +1,7 @@
 import { useState, useMemo, type ReactElement } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { X } from 'lucide-react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { AppLayout } from '../components/layout/AppLayout';
 import { useProject } from '../hooks/useProject';
@@ -116,43 +118,126 @@ function RelatedCard({ project }: { project: Project }) {
 }
 
 // ─── Buy confirmation modal ────────────────────────────────────────────────────
+type BuyStep = 'confirm' | 'processing' | 'success';
+
 function BuyModal({ open, onClose, onConfirm, loading, project, qty, total }: {
   open: boolean; onClose: () => void; onConfirm: () => void; loading: boolean;
   project: Project; qty: number; total: number;
 }) {
-  if (!open) return null;
+  const step: BuyStep = loading ? 'processing' : 'confirm';
+
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.60)', backdropFilter: 'blur(6px)' }} />
-      <div
-        style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'rgba(250,250,247,0.96)', backdropFilter: 'blur(24px)', border: '1px solid rgba(20,20,20,0.10)', borderRadius: 20, boxShadow: '0 24px 64px rgba(10,10,10,0.20)', animation: 'scaleIn 220ms cubic-bezier(0.16, 1, 0.3, 1)' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <div style={{ padding: '24px 28px 0' }}>
-          <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-primary)', marginBottom: 4 }}>Confirmar compra</h2>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: 'var(--ink-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{project.ticker}</p>
-        </div>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 400,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+        >
+          {/* Backdrop */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(10,10,10,0.52)',
+            backdropFilter: 'blur(20px) saturate(140%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+          }} />
 
-        <div style={{ padding: '20px 28px', borderTop: '1px solid var(--rule)', marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <SummaryRow label="Projeto"      value={project.name.slice(0, 30) + (project.name.length > 30 ? '…' : '')} />
-          <SummaryRow label="Quantidade"   value={`${formatNumber(qty)} tokens`} />
-          <SummaryRow label="Preço unit."  value={formatCurrency(project.currentPrice)} />
-          <SummaryRow label="Taxa de rede" value="R$ 0,12" />
-          <div style={{ borderTop: '1px solid var(--rule)', paddingTop: 10, marginTop: 4 }}>
-            <SummaryRow label="Total" value={formatCurrency(total + 0.12)} bold />
-          </div>
-        </div>
+          {/* Card */}
+          <motion.div
+            style={{
+              position: 'relative', width: '100%', maxWidth: 420,
+              background: 'rgba(248,248,245,0.88)',
+              backdropFilter: 'blur(40px) saturate(200%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(200%)',
+              borderRadius: 24,
+              border: '1px solid rgba(255,255,255,0.55)',
+              boxShadow: [
+                'inset 0 1.5px 0 rgba(255,255,255,0.90)',
+                '0 24px 80px rgba(10,10,10,0.22)',
+                '0 8px 24px rgba(10,10,10,0.12)',
+              ].join(', '),
+              overflow: 'hidden',
+            }}
+            initial={{ opacity: 0, scale: 0.93, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.93, y: 12 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* ── Confirm step ── */}
+            {step === 'confirm' && (
+              <>
+                {/* Header */}
+                <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid rgba(20,20,20,0.07)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div>
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: 4 }}>
+                      {project.ticker}
+                    </p>
+                    <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-primary)' }}>
+                      Confirmar compra
+                    </h2>
+                  </div>
+                  <button onClick={onClose}
+                    style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(20,20,20,0.07)', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', transition: 'background 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(20,20,20,0.14)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(20,20,20,0.07)'; }}
+                  >
+                    <X size={14} strokeWidth={2.5} />
+                  </button>
+                </div>
 
-        <div style={{ padding: '0 28px 28px', display: 'flex', gap: 10 }}>
-          <button onClick={onClose} disabled={loading} style={{ flex: 1, height: 44, borderRadius: 11, border: '1.5px solid var(--rule)', background: 'transparent', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-secondary)', cursor: 'pointer' }}>
-            Cancelar
-          </button>
-          <button onClick={onConfirm} disabled={loading} style={{ flex: 2, height: 44, borderRadius: 11, border: 'none', background: 'var(--ink-primary)', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--bg-form)', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
-            {loading ? 'Processando…' : 'Confirmar'}
-          </button>
-        </div>
-      </div>
-    </div>
+                {/* Summary rows */}
+                <div style={{ padding: '18px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <SummaryRow label="Projeto"      value={project.name.length > 32 ? project.name.slice(0, 32) + '…' : project.name} />
+                  <SummaryRow label="Quantidade"   value={`${formatNumber(qty)} tokens`} />
+                  <SummaryRow label="Preço unit."  value={formatCurrency(project.currentPrice)} />
+                  <SummaryRow label="Taxa de rede" value="R$ 0,12" />
+                  <div style={{ borderTop: '1px solid rgba(20,20,20,0.07)', paddingTop: 12, marginTop: 4 }}>
+                    <SummaryRow label="Total" value={formatCurrency(total + 0.12)} bold />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div style={{ padding: '0 24px 24px', display: 'flex', gap: 10 }}>
+                  <button onClick={onClose}
+                    style={{ flex: 1, height: 46, borderRadius: 12, border: '1.5px solid rgba(20,20,20,0.12)', background: 'rgba(255,255,255,0.50)', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-secondary)', cursor: 'pointer', transition: 'border-color 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(20,20,20,0.25)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(20,20,20,0.12)'; }}
+                  >
+                    Cancelar
+                  </button>
+                  <button onClick={onConfirm}
+                    style={{ flex: 2, height: 46, borderRadius: 12, border: 'none', background: 'var(--ink-primary)', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--bg-form)', cursor: 'pointer', boxShadow: '0 4px 16px rgba(10,10,10,0.20)', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(10,10,10,0.25)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(10,10,10,0.20)'; }}
+                    onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.97)'; }}
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* ── Processing step ── */}
+            {step === 'processing' && (
+              <div style={{ padding: '56px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', border: '2.5px solid var(--ink-primary)', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-primary)', marginBottom: 4 }}>Processando</p>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--ink-muted)', letterSpacing: '0.06em' }}>Aguarde um momento…</p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -307,7 +392,7 @@ export default function Projeto() {
 
       {/* ── Main grid: chart (8) + buy panel (4) ── */}
       <section className="page-s3" style={{ marginBottom: 48 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '8fr 4fr', gap: 24, alignItems: 'start' }}>
+        <div className="proj-main-grid">
           {/* Left: Chart */}
           <div style={{ ...GLASS, padding: '28px 24px 20px' }}>
             {/* Period selector */}
@@ -445,7 +530,7 @@ export default function Projeto() {
 
           {/* ── Sobre ── */}
           {tab === 'sobre' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '8fr 4fr', gap: 32 }}>
+            <div className="proj-8-4">
               <div>
                 <h2 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-primary)', marginBottom: 20 }}>Sobre o projeto</h2>
                 {(project.descriptionLong ?? project.description).split('\n\n').map((para, i) => (
@@ -476,7 +561,7 @@ export default function Projeto() {
           {/* ── Tokenomics ── */}
           {tab === 'tokenomics' && (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '8fr 4fr', gap: 32, marginBottom: 32 }}>
+              <div className="proj-8-4" style={{ marginBottom: 32 }}>
                 {/* Donut visual */}
                 <div style={{ ...GLASS, padding: 32 }}>
                   <h3 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--ink-primary)', marginBottom: 24 }}>Distribuição de tokens</h3>
@@ -552,7 +637,7 @@ export default function Projeto() {
 
           {/* ── Equipe ── */}
           {tab === 'equipe' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+            <div className="proj-2col">
               {project.team.map((member, i) => (
                 <div key={i} style={{ ...GLASS, padding: '20px 24px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                   <div style={{ width: 52, height: 52, borderRadius: '50%', background: `hsl(${(member.name.charCodeAt(0) * 37) % 360}, 30%, 35%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
