@@ -18,9 +18,9 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-card-border rounded-input shadow-card px-3 py-2">
-      <p className="text-xs text-gray-400 mb-0.5">{label ? formatDate(label) : ''}</p>
-      <p className="font-mono font-medium text-ink text-sm">{formatCurrency(payload[0].value)}</p>
+    <div className="glass rounded-xl shadow-lg px-4 py-3 border border-border">
+      <p className="text-xs text-text-muted mb-1">{label ? formatDate(label) : ''}</p>
+      <p className="font-mono font-semibold text-text-primary text-sm tabular-nums">{formatCurrency(payload[0].value)}</p>
     </div>
   );
 }
@@ -32,7 +32,7 @@ interface PriceChartProps {
 
 export function PriceChart({ data, change24h }: PriceChartProps) {
   const positive = change24h >= 0;
-  const color = positive ? '#10B981' : '#EF4444';
+  const color = positive ? 'rgb(76, 217, 100)' : 'rgb(255, 59, 48)';
   const gradientId = positive ? 'priceGradGreen' : 'priceGradRed';
   const chartData = data.map(p => ({ date: p.timestamp, price: p.price }));
 
@@ -41,13 +41,13 @@ export function PriceChart({ data, change24h }: PriceChartProps) {
       <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={color} stopOpacity={0.15} />
+            <stop offset="5%" stopColor={color} stopOpacity={0.2} />
             <stop offset="95%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 11, fill: '#9CA3AF', fontFamily: 'DM Sans' }}
+          tick={{ fontSize: 11, fill: 'rgb(130, 129, 138)' }}
           tickLine={false}
           axisLine={false}
           interval="preserveStartEnd"
@@ -57,14 +57,14 @@ export function PriceChart({ data, change24h }: PriceChartProps) {
           }}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: '#9CA3AF', fontFamily: 'DM Mono' }}
+          tick={{ fontSize: 11, fill: 'rgb(130, 129, 138)' }}
           tickLine={false}
           axisLine={false}
           width={60}
           tickFormatter={v => `R$${v.toFixed(2)}`}
           domain={['auto', 'auto']}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255, 255, 255, 0.08)' }} />
         <Area
           type="monotone"
           dataKey="price"
@@ -72,7 +72,7 @@ export function PriceChart({ data, change24h }: PriceChartProps) {
           strokeWidth={2}
           fill={`url(#${gradientId})`}
           dot={false}
-          activeDot={{ r: 4, fill: color, strokeWidth: 0 }}
+          activeDot={{ r: 5, fill: color, strokeWidth: 2, stroke: 'rgb(30, 29, 34)' }}
         />
       </AreaChart>
     </ResponsiveContainer>

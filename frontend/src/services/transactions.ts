@@ -29,6 +29,7 @@ export const transactionsService = {
         amount: payload.amount,
         value: payload.amount * 5,
         timestamp: new Date().toISOString(),
+        status: 'confirmed',
       };
     }
     const { data } = await api.post<Transaction>('/api/transactions/buy', payload);
@@ -44,6 +45,7 @@ export const transactionsService = {
         amount: payload.value,
         value: payload.value,
         timestamp: new Date().toISOString(),
+        status: 'confirmed',
       };
     }
     const { data } = await api.post<Transaction>('/api/transactions/deposit', payload);

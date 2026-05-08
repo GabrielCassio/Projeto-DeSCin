@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet as WalletIcon, ArrowDownToLine, Copy } from 'lucide-react';
-import { AppLayout } from '../components/layout/AppLayout';
+import { Wallet as WalletIcon, ArrowDownToLine, Copy, Check } from 'lucide-react';
+import { AppLayout, PageHeader, Section } from '../components/layout/AppLayout';
 import { AssetRow } from '../components/project/AssetRow';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -15,9 +15,9 @@ import { Badge } from '../components/ui/Badge';
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <Card className="p-5">
-      <p className="text-sm text-gray-400 mb-1">{label}</p>
-      <p className="font-mono font-bold text-2xl text-ink">{value}</p>
+    <Card padding="lg">
+      <p className="text-xs font-medium tracking-widest uppercase text-text-muted mb-2">{label}</p>
+      <p className="font-mono font-semibold text-2xl text-text-primary tabular-nums">{value}</p>
     </Card>
   );
 }
@@ -37,109 +37,118 @@ export default function Wallet() {
 
   return (
     <AppLayout>
-      <div className="mb-6">
-        <h1 className="font-display font-bold text-3xl text-ink mb-1">Carteira</h1>
-        <p className="text-gray-400 text-sm">Seu patrimônio e histórico de transações</p>
-      </div>
+      <PageHeader
+        title="Carteira"
+        subtitle="Patrimônio"
+        description="Seu patrimônio e histórico de transações"
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         <StatCard label="Saldo disponível" value={formatCurrency(availableBalance)} />
         <StatCard label="Total investido" value={formatCurrency(totalInvested)} />
         <StatCard label="Patrimônio total" value={formatCurrency(total)} />
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display font-bold text-ink">Meus Ativos</h2>
-        <Button variant="secondary" size="sm" onClick={() => navigate('/explorar')}>
-          Explorar projetos
-        </Button>
-      </div>
-
-      <Card className="mb-8">
-        {loading ? (
-          Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)
-        ) : assets.length === 0 ? (
-          <EmptyState
-            icon={<WalletIcon size={24} />}
-            title="Nenhum ativo"
-            description="Você ainda não comprou tokens de nenhum projeto."
-            action={
-              <Button onClick={() => navigate('/explorar')}>Explorar projetos</Button>
-            }
-          />
-        ) : (
-          assets.map(asset => (
-            <AssetRow key={asset.ticker} asset={asset} showActions />
-          ))
-        )}
-      </Card>
-
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display font-bold text-ink">Histórico de Transações</h2>
-      </div>
-
-      <Card>
-        {txLoading ? (
-          Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)
-        ) : transactions.length === 0 ? (
-          <EmptyState
-            icon={<ArrowDownToLine size={24} />}
-            title="Sem transações"
-            description="Suas transações aparecerão aqui após o primeiro depósito ou compra."
-          />
-        ) : (
-          <div>
-            <div className="hidden sm:grid grid-cols-5 gap-4 px-6 py-3 text-xs font-medium text-gray-400 border-b border-card-border">
-              <span>Tipo</span>
-              <span className="col-span-2">Projeto / Descrição</span>
-              <span className="text-right">Valor</span>
-              <span className="text-right">Data</span>
+      <Section
+        title="Meus Ativos"
+        action={
+          <Button variant="secondary" size="sm" onClick={() => navigate('/explorar')}>
+            Explorar projetos
+          </Button>
+        }
+      >
+        <Card padding="none">
+          {loading ? (
+            <div className="divide-y divide-border-subtle">
+              {Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)}
             </div>
-            {transactions.map(tx => (
-              <div
-                key={tx.hash}
-                className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4 px-6 py-4 border-b border-card-border last:border-b-0 hover:bg-surface transition-all duration-150"
-              >
-                <div>
-                  <Badge variant={tx.type === 'deposit' ? 'violet' : 'amber'}>
-                    {tx.type === 'deposit' ? 'Depósito' : 'Compra'}
-                  </Badge>
-                </div>
-                <div className="sm:col-span-2">
-                  {tx.ticker ? (
-                    <TickerLabel ticker={tx.ticker} size="sm" />
-                  ) : (
-                    <span className="text-sm text-gray-400">Depósito em conta</span>
-                  )}
-                  <p className="text-xs text-gray-400 mt-0.5 font-mono flex items-center gap-1">
-                    {truncateHash(tx.hash)}
-                    <button
-                      onClick={() => copyHash(tx.hash)}
-                      className="text-gray-300 hover:text-gray-500 transition-colors"
-                      title="Copiar hash"
-                    >
-                      {copiedHash === tx.hash ? (
-                        <span className="text-success text-xs">✓</span>
-                      ) : (
-                        <Copy size={11} />
-                      )}
-                    </button>
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-mono font-medium text-ink">{formatCurrency(tx.value)}</p>
-                  {tx.type === 'buy' && (
-                    <p className="text-xs text-gray-400">{tx.amount} tokens</p>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-400">{formatDateTime(tx.timestamp)}</p>
-                </div>
+          ) : assets.length === 0 ? (
+            <EmptyState
+              icon={<WalletIcon size={24} />}
+              title="Nenhum ativo"
+              description="Você ainda não comprou tokens de nenhum projeto."
+              action={
+                <Button onClick={() => navigate('/explorar')}>Explorar projetos</Button>
+              }
+            />
+          ) : (
+            <div className="divide-y divide-border-subtle">
+              {assets.map(asset => (
+                <AssetRow key={asset.ticker} asset={asset} />
+              ))}
+            </div>
+          )}
+        </Card>
+      </Section>
+
+      <Section title="Histórico de Transações">
+        <Card padding="none">
+          {txLoading ? (
+            <div className="divide-y divide-border-subtle">
+              {Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)}
+            </div>
+          ) : transactions.length === 0 ? (
+            <EmptyState
+              icon={<ArrowDownToLine size={24} />}
+              title="Sem transações"
+              description="Suas transações aparecerão aqui após o primeiro depósito ou compra."
+            />
+          ) : (
+            <div>
+              <div className="hidden sm:grid grid-cols-5 gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider text-text-muted border-b border-border-subtle">
+                <span>Tipo</span>
+                <span className="col-span-2">Projeto / Descrição</span>
+                <span className="text-right">Valor</span>
+                <span className="text-right">Data</span>
               </div>
-            ))}
-          </div>
-        )}
-      </Card>
+              <div className="divide-y divide-border-subtle">
+                {transactions.map(tx => (
+                  <div
+                    key={tx.hash}
+                    className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4 px-6 py-4 hover:bg-bg-surface transition-colors duration-150"
+                  >
+                    <div>
+                      <Badge variant={tx.type === 'deposit' ? 'info' : 'accent'}>
+                        {tx.type === 'deposit' ? 'Depósito' : tx.type === 'buy' ? 'Compra' : tx.type === 'sell' ? 'Venda' : 'Saque'}
+                      </Badge>
+                    </div>
+                    <div className="sm:col-span-2">
+                      {tx.ticker ? (
+                        <TickerLabel ticker={tx.ticker} size="sm" />
+                      ) : (
+                        <span className="text-sm text-text-secondary">Depósito em conta</span>
+                      )}
+                      <p className="text-xs text-text-muted mt-0.5 font-mono flex items-center gap-1.5">
+                        {truncateHash(tx.hash)}
+                        <button
+                          onClick={() => copyHash(tx.hash)}
+                          className="text-text-muted hover:text-text-primary transition-colors"
+                          title="Copiar hash"
+                        >
+                          {copiedHash === tx.hash ? (
+                            <Check size={12} className="text-success" />
+                          ) : (
+                            <Copy size={11} />
+                          )}
+                        </button>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono font-medium text-text-primary tabular-nums">{formatCurrency(tx.value)}</p>
+                      {tx.type === 'buy' && (
+                        <p className="text-xs text-text-muted">{tx.amount} tokens</p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-text-muted">{formatDateTime(tx.timestamp)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card>
+      </Section>
     </AppLayout>
   );
 }

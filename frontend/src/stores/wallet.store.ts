@@ -7,12 +7,15 @@ interface WalletStore extends WalletData {
   error: string | null;
   fetch: () => Promise<void>;
   optimisticDeposit: (amount: number) => void;
-  optimisticBuy: (ticker: string, projectName: string, tokens: number, value: number) => void;
+  optimisticWithdraw: (amount: number) => void;
+  optimisticBuy: (ticker: string, projectName: string, tokens: number, value: number, price: number) => void;
+  optimisticSell: (ticker: string, tokens: number, value: number) => void;
 }
 
-export const useWalletStore = create<WalletStore>(set => ({
+export const useWalletStore = create<WalletStore>((set) => ({
   availableBalance: 0,
   totalInvested: 0,
+  totalValue: 0,
   assets: [],
   loading: false,
   error: null,
@@ -27,19 +30,41 @@ export const useWalletStore = create<WalletStore>(set => ({
     }
   },
 
-  optimisticDeposit: (amount: number) => {
-    set(s => ({ availableBalance: s.availableBalance + amount }));
+  optimisticDeposit: (amount) => {
+    set((s) => ({
+      availableBalance: s.availableBalance + amount,
+      totalValue: s.totalValue + amount,
+    }));
   },
 
-  optimisticBuy: (ticker: string, projectName: string, tokens: number, value: number) => {
-    set(s => {
-      const existing = s.assets.find(a => a.ticker === ticker);
+  optimisticWithdraw: (amount) => {
+    set((s) => ({
+      availableBalance: s.availableBalance - amount,
+      totalValue: s.totalValue - amount,
+    }));
+  },
+
+  optimisticBuy: (ticker, projectName, tokens, value, price) => {
+    set((s) => {
+      const existing = s.assets.find((a) => a.ticker === ticker);
       let assets: Asset[];
+
       if (existing) {
-        assets = s.assets.map(a =>
+        const totalTokens = existing.tokensOwned + tokens;
+        const totalCost = existing.averagePrice * existing.tokensOwned + value;
+        const newAvgPrice = totalCost / totalTokens;
+
+        assets = s.assets.map((a) =>
           a.ticker === ticker
-            ? { ...a, tokensOwned: a.tokensOwned + tokens, currentValue: a.currentValue + value }
-            : a,
+            ? {
+                ...a,
+                tokensOwned: totalTokens,
+                averagePrice: newAvgPrice,
+                currentValue: totalTokens * price,
+                pnl: (price - newAvgPrice) * totalTokens,
+                pnlPercent: ((price - newAvgPrice) / newAvgPrice) * 100,
+              }
+            : a
         );
       } else {
         assets = [
@@ -48,16 +73,43 @@ export const useWalletStore = create<WalletStore>(set => ({
             ticker,
             projectName,
             tokensOwned: tokens,
+            averagePrice: price,
             currentValue: value,
             change24h: 0,
+            pnl: 0,
+            pnlPercent: 0,
             priceHistory: [],
           },
         ];
       }
+
       return {
         assets,
         availableBalance: s.availableBalance - value,
         totalInvested: s.totalInvested + value,
+      };
+    });
+  },
+
+  optimisticSell: (ticker, tokens, value) => {
+    set((s) => {
+      const assets = s.assets
+        .map((a) => {
+          if (a.ticker !== ticker) return a;
+          const newTokens = a.tokensOwned - tokens;
+          if (newTokens <= 0) return null;
+          return {
+            ...a,
+            tokensOwned: newTokens,
+            currentValue: a.currentValue - value,
+          };
+        })
+        .filter((a): a is Asset => a !== null);
+
+      return {
+        assets,
+        availableBalance: s.availableBalance + value,
+        totalInvested: Math.max(0, s.totalInvested - value),
       };
     });
   },

@@ -19,9 +19,9 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   const item = payload[0].payload;
   return (
-    <div className="bg-white border border-card-border rounded-input shadow-card px-3 py-2">
-      <p className="text-xs font-medium text-ink">{item.label}</p>
-      <p className="font-mono text-sm text-gray-600">{item.value.toLocaleString('pt-BR')} tokens</p>
+    <div className="glass rounded-xl shadow-lg px-4 py-3 border border-border">
+      <p className="text-xs font-medium text-text-primary">{item.label}</p>
+      <p className="font-mono text-sm text-text-secondary tabular-nums">{item.value.toLocaleString('pt-BR')} tokens</p>
     </div>
   );
 }
@@ -40,7 +40,7 @@ export function DonutChart({ data }: DonutChartProps) {
             dataKey="value"
             nameKey="label"
             strokeWidth={2}
-            stroke="#fff"
+            stroke="rgb(25, 24, 28)"
           >
             {data.map((entry, i) => (
               <Cell key={i} fill={entry.color} />
@@ -56,8 +56,8 @@ export function DonutChart({ data }: DonutChartProps) {
               className="w-3 h-3 rounded-full flex-shrink-0"
               style={{ background: entry.color }}
             />
-            <span className="text-gray-600">{entry.label}</span>
-            <span className="ml-auto font-mono text-ink font-medium">
+            <span className="text-text-secondary">{entry.label}</span>
+            <span className="ml-auto font-mono text-text-primary font-medium tabular-nums">
               {((entry.value / data.reduce((s, d) => s + d.value, 0)) * 100).toFixed(1)}%
             </span>
           </li>

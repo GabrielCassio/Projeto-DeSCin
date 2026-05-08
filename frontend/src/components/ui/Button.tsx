@@ -1,58 +1,74 @@
-import { Loader2 } from 'lucide-react';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { cn } from '../../utils/cn';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type Size = 'sm' | 'md' | 'lg';
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant;
-  size?: Size;
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   loading?: boolean;
-  children: ReactNode;
+  icon?: ReactNode;
+  iconRight?: ReactNode;
+  fullWidth?: boolean;
 }
 
-const variantClasses: Record<Variant, string> = {
-  primary:
-    'bg-violet-600 text-white hover:bg-violet-700 disabled:bg-violet-400',
-  secondary:
-    'bg-card text-violet-600 border border-card-border hover:bg-card-hover disabled:opacity-50',
-  ghost:
-    'bg-transparent text-gray-600 hover:bg-card disabled:opacity-50',
-  danger:
-    'bg-danger text-white hover:bg-red-600 disabled:bg-red-300',
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      variant = 'primary',
+      size = 'md',
+      loading = false,
+      icon,
+      iconRight,
+      fullWidth = false,
+      disabled,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
 
-const sizeClasses: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-6 py-3 text-base',
-};
+    return (
+      <button
+        ref={ref}
+        disabled={isDisabled}
+        className={cn(
+          'inline-flex items-center justify-center gap-2',
+          'font-medium tracking-wide uppercase',
+          'rounded-lg transition-all duration-150',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+          'disabled:opacity-40 disabled:pointer-events-none',
+          'active:scale-[0.98]',
+          fullWidth && 'w-full',
+          {
+            'bg-accent text-bg hover:bg-accent-hover': variant === 'primary',
+            'bg-bg-surface text-text-primary border border-border hover:bg-bg-hover hover:border-border-strong': variant === 'secondary',
+            'bg-transparent text-text-secondary hover:bg-bg-surface hover:text-text-primary': variant === 'ghost',
+            'bg-danger text-white hover:brightness-110': variant === 'danger',
+            'bg-transparent text-text-primary border border-border hover:bg-bg-surface hover:border-border-strong': variant === 'outline',
+          },
+          {
+            'h-8 px-3 text-xs': size === 'sm',
+            'h-10 px-4 text-sm': size === 'md',
+            'h-12 px-6 text-sm': size === 'lg',
+            'h-14 px-8 text-base': size === 'xl',
+          },
+          className
+        )}
+        {...props}
+      >
+        {loading ? (
+          <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <>
+            {icon && <span className="flex-shrink-0 -ml-0.5">{icon}</span>}
+            {children}
+            {iconRight && <span className="flex-shrink-0 -mr-0.5">{iconRight}</span>}
+          </>
+        )}
+      </button>
+    );
+  }
+);
 
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  disabled,
-  children,
-  className = '',
-  ...props
-}: ButtonProps) {
-  const isDisabled = disabled || loading;
-  return (
-    <button
-      disabled={isDisabled}
-      className={[
-        'inline-flex items-center justify-center gap-2 font-medium rounded-input',
-        'transition-all duration-150 cursor-pointer select-none',
-        'disabled:cursor-not-allowed',
-        variantClasses[variant],
-        sizeClasses[size],
-        className,
-      ].join(' ')}
-      {...props}
-    >
-      {loading && <Loader2 size={16} className="animate-spin" />}
-      {children}
-    </button>
-  );
-}
+Button.displayName = 'Button';

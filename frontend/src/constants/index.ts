@@ -1,6 +1,6 @@
 import type { Area, Period, SortBy } from '../types';
 
-export const AREAS: Area[] = ['Todas', 'Tecnologia', 'Saúde', 'Engenharia', 'Humanas', 'Ciências'];
+export const AREAS: Area[] = ['Todas', 'Tecnologia', 'Saúde', 'Engenharia', 'Humanas', 'Ciências', 'Sustentabilidade'];
 
 export const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'volume', label: 'Volume' },
@@ -8,12 +8,11 @@ export const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'change', label: 'Valorização' },
 ];
 
-export const PERIODS: Period[] = ['1D', '1S', '1M', '3M', '1A'];
-
-export const PROJECT_PERIODS: Period[] = ['1D', '1S', '1M', 'Tudo'];
+export const PERIODS: Period[] = ['1D', '7D', '1M', '3M', '1A', 'Tudo'];
+export const PROJECT_PERIODS = PERIODS;
 
 export const QUICK_DEPOSIT_VALUES = [50, 100, 250, 500];
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
-export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
+export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false';
