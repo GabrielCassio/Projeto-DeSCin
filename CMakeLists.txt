@@ -55,11 +55,17 @@ set(PROJECT_FILES
 )
 
 # Arquivos referentes à API
-set(API_FILES
+set(ROUTES_FILES
     api/routes/routes.cpp
+    api/routes/projects_routes.cpp
+)
+
+set(API_FILES
+    ${ROUTES_FILES}
     api/descin_node.cpp
     api/middleware/auth_middleware.cpp
 )
+
 
 # Arquivos referentes aos utils
 set(UTILS_FILES
@@ -103,10 +109,7 @@ add_executable(${api_executable_name})
 # Atribuindo arquivos correspondentes a criação do executável
 target_sources(${api_executable_name} PRIVATE
     main_api.cpp
-    ${BLOCK_FILES}
-    ${UTILS_FILES}
-    ${PROJECT_FILES}
-    ${API_FILES}
+    ${ROUTES_FILES}
 )
 
 # Atribuindo as bibliotecas ao programa
@@ -114,14 +117,12 @@ target_link_libraries(${api_executable_name} PRIVATE
     Threads::Threads
     nlohmann_json::nlohmann_json
     Crow::Crow
-    OpenSSL::SSL
-    OpenSSL::Crypto
     pthread
 )
 
 # Arquivo compilado dos projetos --------------------------
 
-# Nome do arquivo de Execução/Compilado da API
+# Nome do arquivo de Execução/Compilado do Projeto_DeSCin
 set(project_executable_name descin_projects)
 
 # Definindo o nome do arquivo executável da api do Projeto_DeSCin

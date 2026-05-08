@@ -9,15 +9,15 @@
  */
 class Routes {
     private:
-        crow::SimpleApp& app;
+        crow::App& app;
         
     public:
         // Constructor and Destructor
-        Routes(crow::SimpleApp& app);
+        Routes(crow::App& app);
         ~Routes() = default;
     
         // Routes Methods
-        void setup_routes();
+        virtual void setup_routes() = 0;
 };
 
 

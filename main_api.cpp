@@ -8,7 +8,7 @@
  */
 
 int main(){
-    crow::SimpleApp app;
+    crow::App app;
     Routes routes(app);
 
     app.bindaddr("0.0.0.0");
