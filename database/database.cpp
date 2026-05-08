@@ -1,3 +1,4 @@
+#include "database.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,7 +7,6 @@
 #include <openssl/rand.h> // Usada para gerar números verdadeiramente aleatórios SALT
 #include <openssl/aes.h>
 
-using namespace std;
 
 // No AES-256, a chave precisa ter exatamente 32 bytes(256bits)
 const int TAMANHO_CHAVE = 32;
@@ -15,7 +15,7 @@ const int TAMANHO_IV = 16;
 // Em SI usamos o padrão PBKDF2
 // O Salt é uma sequência de bytes aleatórios adicionada à senha antes de embaralhá-la.
 
-void derivarChave(const string& senha, const unsigned char* salt, unsigned char* chaveFinal) {
+void derivarChave(const std::string& senha, const unsigned char* salt, unsigned char* chaveFinal) {
     int iteracoes = 10000; // Quanto mais interações mais difícil de quebrar
     // Esta função do OpenSSL faz todo o trabalho matemático
     PKCS5_PBKDF2_HMAC_SHA1(
@@ -30,7 +30,7 @@ void derivarChave(const string& senha, const unsigned char* salt, unsigned char*
 
 }
 
-vector<unsigned char> encriptor(string texto, unsigned char* chave, unsigned char* iv) {
+std::vector<unsigned char> encriptor(std::string texto, unsigned char* chave, unsigned char* iv) {
     // 1. O "Cérebro" da Operação (Contexto)
     // EVP_CIPHER_CTX é uma estrutura que guarda o estado da nossa encriptação.
     // Usamos um ponteiro (*) porque o OpenSSL gerencia essa memória internamente.
@@ -39,7 +39,7 @@ vector<unsigned char> encriptor(string texto, unsigned char* chave, unsigned cha
     // 2. Preparando o "balde" para o resultado
     // O texto secreto pode ser um pouco maior que o original (por causa do padding).
     // Reservamos o tamanho do texto + 16 bytes (tamanho de um bloco AES).
-    vector<unsigned char> textoEncriptado(texto.length() + 16);
+    std::vector<unsigned char> textoEncriptado(texto.length() + 16);
 
     int len;          // Quantos bytes foram processados agora
     int tamanhoTotal; // Total de bytes encriptados no final
@@ -96,10 +96,10 @@ std::vector<unsigned char> decriptor(const std::vector<unsigned char>& dadosCifr
     return dadosLimpos;
 }
 
-void SalvarNoBancoDeDados(unsigned char* salt, unsigned char* iv, vector<unsigned char>& dadoEncriptado, string destinoFinal) {
+void SalvarNoBancoDeDados(unsigned char* salt, unsigned char* iv, std::vector<unsigned char>& dadoEncriptado, std::string destinoFinal) {
 
     // Abrindo o ficheiro para a escrita
-    ofstream ficheiro(destinoFinal, ios::binary | ios::app);
+    std::ofstream ficheiro(destinoFinal, std::ios::binary | std::ios::app);
 
     if (ficheiro.is_open()){
     // Primeiro argumento do .write é onde o dado começa e o outro é o quão grande ele é
@@ -120,43 +120,9 @@ void SalvarNoBancoDeDados(unsigned char* salt, unsigned char* iv, vector<unsigne
     ficheiro.write((char*)dadoEncriptado.data(), dadoEncriptado.size());
 
     ficheiro.close();
-    cout << "Bloco guardado com sucesso em: " << destinoFinal << " 📁" << endl;
+    std::cout << "Bloco guardado com sucesso em: " << destinoFinal << " 📁" << std::endl;
     }
 }
-
-int main() {
-    string senhaUsuario = "minha_senha_123";
-
-    // Espaços na memória
-    unsigned char meuSalt[TAMANHO_IV];
-    unsigned char meuIV[TAMANHO_IV];
-    unsigned char minhaChave[TAMANHO_CHAVE];
-
-
-    // Preenhce os espações com numeros aleatórios
-    RAND_bytes(meuSalt, TAMANHO_IV);
-    RAND_bytes(meuIV, TAMANHO_IV);
-
-    // Gera a Chave Final
-    derivarChave(senhaUsuario, meuSalt, minhaChave);
-
-    vector<unsigned char> resultadoSecreto = encriptor(senhaUsuario, minhaChave, meuIV);
-    SalvarNoBancoDeDados(meuSalt, meuIV, resultadoSecreto, "database.txt");
-
-    cout << "Dados encriptados com sucesso!" << endl;
-    cout << "Tamanho original: " << senhaUsuario.length() << " bytes" << endl;
-    cout << "Tamanho secreto: " << resultadoSecreto.size() << " bytes" << endl;
-
-
-
-    return 0;
-}
-
-
-
-
-
-
 
 
 
