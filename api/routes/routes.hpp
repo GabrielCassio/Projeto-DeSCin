@@ -7,8 +7,9 @@
  * Classe para configurar as rotas da aplicação.
  * Define
  */
+
 class Routes {
-    private:
+    protected:
         crow::App& app;
         
     public:

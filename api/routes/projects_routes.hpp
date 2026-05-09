@@ -2,7 +2,7 @@
 #define PROJECTS_ROUTES_HPP
 
 // Include Base class
-#include 'routes.hpp'
+#include "routes.hpp"
 // Include libraries
 #include <crow.h>
 
@@ -13,7 +13,8 @@ class ProjectsRoutes : public Routes {
 private:
         
 public:
-    void setup_routes(crow::App& app) override;
+    ProjectsRoutes(crow::App& app) : Routes(app) {}
+    void setup_routes() override;
 };
 
 #endif // PROJECTS_ROUTES_HPP
