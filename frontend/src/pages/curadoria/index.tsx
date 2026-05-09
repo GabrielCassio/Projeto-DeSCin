@@ -8,6 +8,7 @@ import { useNotificationStore } from '../../stores/notification.store';
 import { toast } from '../../components/ui/Toast';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getProjectGradient } from '../../utils/color';
+import { getFormattedDateTime } from '../../utils/briefing';
 import type { LiveProject } from '../../stores/project.store';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -268,7 +269,7 @@ export default function Curadoria() {
       {/* Hero */}
       <section className="page-s1" style={{ marginBottom: 32, paddingBottom: 32, borderBottom: '1px solid var(--rule)' }}>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-muted)', display: 'block', marginBottom: 16 }}>
-          Curadoria · {user?.name}
+          {getFormattedDateTime()}
         </span>
         <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, textTransform: 'uppercase', lineHeight: 0.95, letterSpacing: '-0.025em' }}>
           <span style={{ display: 'block', fontSize: 'clamp(36px, 4.5vw, 64px)', color: 'var(--ink-primary)' }}>Fila de</span>

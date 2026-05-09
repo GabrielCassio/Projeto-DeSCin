@@ -5,6 +5,7 @@ import { useProjectStore } from '../../stores/project.store';
 import { useAuthStore } from '../../stores/auth.store';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getProjectGradient } from '../../utils/color';
+import { getFormattedDateTime } from '../../utils/briefing';
 import type { LiveProject } from '../../stores/project.store';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -160,7 +161,7 @@ export default function FounderDashboard() {
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-muted)', display: 'block', marginBottom: 16 }}>
-              Meus Projetos · {user?.name}
+              {getFormattedDateTime()}
             </span>
             <h1 style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, textTransform: 'uppercase', lineHeight: 0.95, letterSpacing: '-0.025em' }}>
               <span style={{ display: 'block', fontSize: 'clamp(36px, 4.5vw, 64px)', color: 'var(--ink-primary)' }}>Seus ativos</span>
