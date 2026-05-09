@@ -62,6 +62,8 @@ set(UTILS_FILES
     backend/blockchain-core/src/utils/encryptation/decode_signature.cpp
 )
 
+set(DATABASE_FILES database/database.cpp)
+
 
 # Arquivo compilado da Blockchain -------------------------------------------------------------------------
 # Nome do arquivo de Execução/Compilado da blockchain
@@ -102,6 +104,7 @@ target_sources(${api_executable_name} PRIVATE
     ${UTILS_FILES}
     ${PROJECT_FILES}
     ${API_FILES}
+    ${DATABASE_FILES}
 )
 
 # Atribuindo as bibliotecas ao programa
@@ -153,6 +156,7 @@ target_sources(${app_executable_name} PRIVATE
     ${UTILS_FILES}
     ${API_FILES}
     ${PROJECT_FILES}
+    ${DATABASE_FILES}
 )
 
 # Atribuindo as bibliotecas ao programa
