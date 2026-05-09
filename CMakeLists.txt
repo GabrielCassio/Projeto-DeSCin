@@ -52,6 +52,10 @@ set(PROJECT_FILES
     backend/projects-core/project_state.cpp
 )
 
+set(USER_FILES
+    backend/users-core/user_state.cpp
+)
+
 set(API_FILES
     api/descin_node.cpp
     api/middleware/auth_middleware.cpp
@@ -103,6 +107,7 @@ target_sources(${api_executable_name} PRIVATE
     ${BLOCK_FILES}
     ${UTILS_FILES}
     ${PROJECT_FILES}
+    ${USER_FILES}
     ${API_FILES}
     ${DATABASE_FILES}
 )
@@ -156,6 +161,7 @@ target_sources(${app_executable_name} PRIVATE
     ${UTILS_FILES}
     ${API_FILES}
     ${PROJECT_FILES}
+    ${USER_FILES}
     ${DATABASE_FILES}
 )
 
