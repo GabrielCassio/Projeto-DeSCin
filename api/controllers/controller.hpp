@@ -10,6 +10,8 @@ class Controller {
 protected:
     
 public:
+    // Default constructor and destructor.
+    Controller() = default;
     virtual ~Controller() = default;
     
     // Pure virtual methods for HTTP methods.

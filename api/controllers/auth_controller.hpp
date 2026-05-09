@@ -17,6 +17,9 @@ public:
     crow::response put(const crow::request& req, const std::string& id) override { return {crow::response(405, "Method Not Allowed")}; };
     crow::response del(const crow::request& req, const std::string& id) override { return {crow::response(405, "Method Not Allowed")}; };
 
+    // Autenticação Email e Senha
+    crow::response login(const crow::request& req); 
+    
     // Verifica se o usuário está autenticado com Google
     crow::response login_google(const crow::request& req);
     // Verifica o callback do Google
