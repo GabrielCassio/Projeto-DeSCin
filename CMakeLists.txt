@@ -58,6 +58,8 @@ set(PROJECT_FILES
 set(ROUTES_FILES
     api/routes/routes.cpp
     api/routes/projects_routes.cpp
+    api/routes/wallets_routes.cpp
+
 )
 
 set(API_FILES

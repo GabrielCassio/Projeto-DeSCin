@@ -1,12 +1,13 @@
 #ifndef WALLETS_ROUTES_HPP
 #define WALLETS_ROUTES_HPP
 
-#include 'routes.hpp'
+#include "routes.hpp"
 #include <crow.h>
 
 class WalletsRoutes : public Routes {
 public:
-    void setup_routes(crow::App& app);
+    WalletsRoutes(crow::App<>& app) : Routes(app) {}
+    void setup_routes() override;
 };
 
 #endif // WALLETS_ROUTES_HPP

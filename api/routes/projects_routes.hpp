@@ -13,7 +13,7 @@ class ProjectsRoutes : public Routes {
 private:
         
 public:
-    ProjectsRoutes(crow::App& app) : Routes(app) {}
+    ProjectsRoutes(crow::App<>& app) : Routes(app) {}
     void setup_routes() override;
 };
 

@@ -10,11 +10,11 @@
 
 class Routes {
     protected:
-        crow::App& app;
+        crow::App<>& app;
         
     public:
         // Constructor and Destructor
-        Routes(crow::App& app);
+        Routes(crow::App<>& app);
         ~Routes() = default;
     
         // Routes Methods
