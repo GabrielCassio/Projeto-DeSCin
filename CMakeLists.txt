@@ -67,6 +67,12 @@ set(CONTROLLER_FILES
     api/controllers/wallets_controller.cpp
 )
 
+set(SERVICE_FILES
+    api/services/user_service.cpp
+    api/services/projects_service.cpp
+    api/services/wallets_service.cpp
+)
+
 set(MIDDLEWARE_FILES
     api/middleware/auth_middleware.cpp
 )
@@ -75,6 +81,7 @@ set(API_FILES
     #api/descin_node.cpp
     ${ROUTES_FILES}
     ${CONTROLLER_FILES}
+    ${SERVICE_FILES}
     ${MIDDLEWARE_FILES}
 )
 

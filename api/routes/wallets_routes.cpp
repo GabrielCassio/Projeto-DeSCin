@@ -25,4 +25,13 @@ void WalletsRoutes::setup_routes() {
                 return crow::response(500, e.what());
             }
         });
+    CROW_ROUTE(app, "/wallets/<string>")
+        .methods("PUT"_method)
+        ([this](const crow::request& req, std::string id) -> crow::response {
+            try {
+                return this->controller.put(req, id);
+            } catch (const std::exception& e) {
+                return crow::response(500, e.what());
+            }
+        });
 }

@@ -5,11 +5,13 @@
 
 void AuthRoutes::setup_routes() {
     // Rota de Autenticação Padrão --------------------------
-    CREATE_ROUTE(app, "/auth/login")
+    CROW_ROUTE(app, "/auth/login")
         .methods("POST"_method)
         ([this](const crow::request& req) -> crow::response {
-            try {
+        try {            
+            // Chama o método de login do controller
             return this->controller.login(req);
+            
         } catch (const std::exception& e) {
             return crow::response(500, e.what());
         }

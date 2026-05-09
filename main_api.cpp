@@ -8,6 +8,11 @@
 #include "api/controllers/projects_controller.hpp"
 #include "api/controllers/wallets_controller.hpp"
 
+// Include Services
+#include "api/services/user_service.hpp"
+#include "api/services/projects_service.hpp"
+#include "api/services/wallets_service.hpp"
+
 // Include libraries
 #include <crow.h>
 
@@ -19,11 +24,15 @@
     // Initialize App
     crow::App<> app;
     
-    // Initialize Controllers
-    AuthController auth_controller;
-    ProjectsController projects_controller;
-    WalletsController wallets_controller;
+    // Initialize Services
+    UserService user_service;
+    ProjectsService projects_service;
+    WalletsService wallets_service;
     
+    // Initialize Controllers
+    AuthController auth_controller(user_service);
+    ProjectsController projects_controller(projects_service);
+    WalletsController wallets_controller(wallets_service);
     
     // Initialize Routes
     AuthRoutes auth_routes(app, auth_controller);
