@@ -2,23 +2,18 @@
 #define ROUTES_HPP
 
 #include <crow.h>
+#include "../descin_node.hpp"
 
-/*
- * Classe para configurar as rotas da aplicação.
- * Define
- */
 class Routes {
-    private:
-        crow::SimpleApp& app;
-        
+    protected:
+        crow::App<>& app;
+        DescinNode&  node;
+
     public:
-        // Constructor and Destructor
-        Routes(crow::SimpleApp& app);
+        Routes(crow::App<>& app, DescinNode& node);
         ~Routes() = default;
-    
-        // Routes Methods
-        void setup_routes();
+
+        virtual void setup_routes() = 0;
 };
 
-
-#endif
+#endif // ROUTES_HPP
