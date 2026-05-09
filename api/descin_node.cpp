@@ -5,6 +5,12 @@
 // Importing utils
 #include "../backend/blockchain-core/src/utils/date.hpp"
 
+
+DescinNode::DescinNode(int diff) : blockchain(diff) {
+    
+}
+
+
 bool DescinNode::process_investment(const std::string& sender, const std::string& project_id, unsigned long amount, const std::string& signature) {
     // Lockzinho
     std::lock_guard<std::mutex> lock(node_mutex);

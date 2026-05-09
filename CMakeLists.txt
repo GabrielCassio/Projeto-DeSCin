@@ -112,6 +112,11 @@ add_executable(${api_executable_name})
 target_sources(${api_executable_name} PRIVATE
     main_api.cpp
     ${ROUTES_FILES}
+    api/descin_node.cpp
+    api/middleware/auth_middleware.cpp
+    ${BLOCK_FILES}
+    ${PROJECT_FILES}
+    ${UTILS_FILES}
 )
 
 # Atribuindo as bibliotecas ao programa
@@ -137,7 +142,7 @@ target_sources(${project_executable_name} PRIVATE
 )
 
 # Atribuindo as bibliotecas ao programa
-target_link_libraries(${project_executable_name} PRIVATE
+target_link_libraries(${api_executable_name} PRIVATE
     Threads::Threads
     nlohmann_json::nlohmann_json
     Crow::Crow
