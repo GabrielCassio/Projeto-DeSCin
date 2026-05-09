@@ -12,6 +12,9 @@ import Projeto from './pages/Projeto';
 import Wallet from './pages/Wallet';
 import Depositar from './pages/Depositar';
 import Configuracoes from './pages/Configuracoes';
+import Curadoria from './pages/curadoria/index';
+import FounderDashboard from './pages/founder/index';
+import CriarProjeto from './pages/founder/CriarProjeto';
 
 export default function App() {
   return (
@@ -29,6 +32,10 @@ export default function App() {
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/depositar" element={<Depositar />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
+
+          <Route path="/curadoria" element={<Curadoria />} />
+          <Route path="/founder" element={<FounderDashboard />} />
+          <Route path="/criar-projeto" element={<CriarProjeto />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
