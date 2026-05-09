@@ -14,7 +14,7 @@ class Routes {
         
     public:
         // Constructor and Destructor
-        Routes(crow::App<>& app);
+        Routes(crow::App<>& app) : app(app) {};
         ~Routes() = default;
     
         // Routes Methods
