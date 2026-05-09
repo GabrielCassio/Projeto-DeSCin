@@ -66,7 +66,10 @@ set(UTILS_FILES
     backend/blockchain-core/src/utils/encryptation/decode_signature.cpp
 )
 
-set(DATABASE_FILES database/database.cpp)
+set(DATABASE_FILES
+    database/database.cpp 
+    database/key_vault.cpp
+    )
 
 
 # Arquivo compilado da Blockchain -------------------------------------------------------------------------
