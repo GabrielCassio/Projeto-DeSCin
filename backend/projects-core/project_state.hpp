@@ -9,7 +9,7 @@
 #include <vector>
 #include <mutex>
 #include <string>
-
+#include <nlohmann/json.hpp>
 
 // Body ProjectState Structure
 /*
@@ -28,6 +28,11 @@ struct ProjectsBody {
     double          roi_estimate;               // Estimativa de retorno sobre investimento
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ProjectsBody,
+    project_id, name, description, category,
+    total_funding, target_funding, investors_count,
+    status, created_at, roi_estimate)
+
 // Body Investiment Structure
 /*
  * Esses são os dados que compõe um investimento dentro da plataforma DeSCin
@@ -42,6 +47,9 @@ struct InvestimentBody {
     std::string     status;                       // "active" | "exited" | "pending"
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(InvestimentBody,
+    project_id, investor_address, project_name,
+    amount_invested, current_value, invested_at, status)
 
 /*
  * Classe que representa o estado de um projeto na plataforma DeSCin
