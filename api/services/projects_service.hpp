@@ -5,6 +5,7 @@
 #include <string>
 #include <optional>
 #include <vector>
+#include <pqxx/pqxx>
 
 // Include the base Service class
 #include "service.hpp"
@@ -15,8 +16,8 @@ public:
     ProjectsService() = default;
     ~ProjectsService() = default;
 
-    std::optional<Project> show(const std::string id) const override;
-    std::vector<Project> index() const override;
+    std::optional<Project> get_by_id(const std::string id) const override;
+    std::vector<Project> get_all() const override;
     Project create(const crow::json::rvalue& body) override;
     Project update(const crow::json::rvalue& body, const std::string id) override;
     Project destroy(const std::string id) override;

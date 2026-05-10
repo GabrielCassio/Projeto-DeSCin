@@ -1,12 +1,9 @@
 #ifndef PROJECTS_ROUTES_HPP
 #define PROJECTS_ROUTES_HPP
 
-<<<<<<< HEAD
-#include "routes.hpp"
-=======
 // Include libraries
->>>>>>> feat/api
 #include <crow.h>
+
 // Include Base class
 #include "routes.hpp"
 #include "../controllers/projects_controller.hpp"

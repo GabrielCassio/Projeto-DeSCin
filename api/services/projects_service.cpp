@@ -5,11 +5,11 @@
 #include <vector>
 
 
-std::optional<Project> ProjectsService::show(const std::string id) const {
+std::optional<Project> ProjectsService::get_by_id(const std::string id) const {
     return std::nullopt;
 }
 
-std::vector<Project> ProjectsService::index() const {
+std::vector<Project> ProjectsService::get_all() const {
     return {};
 }
 

@@ -15,3 +15,5 @@ frontend/dist/
 *.o
 *.a
 *.so
+**/.zed
+**/*.http

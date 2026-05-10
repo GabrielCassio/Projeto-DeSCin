@@ -12,14 +12,21 @@ crow::response AuthController::login(const crow::request& req) {
         // Desmembra o body da requisição
         auto body = crow::json::load(req.body);
         // Verifica se o body existe completamente
-        if (!body.has("email") || !body.has("password"))
-            return crow::response(400, "Missing email or password");
+        if (!body.has("email") || !body.has("password")
+            return crow::response(400, "Falta o email ou a senha!");
+
+        if (!body.has("RoleChoice"))
+            return crow::response(400, "Falta escolher seu Cargo!")
 
         // Desestrutura o body da requisição
         std::string email = body["email"].s();
         std::string password = body["password"].s();
+        std::string role_choice = body["RoleChoice"].s();
 
-        //auto result =
+        auto result = service.login(email, password);
+
+        if (!result)
+            return crow::response(401, "Email ou senha inválida");
 
         // Retorna 200 com tudo OK
         return crow::response(200, "Autenticação Realizada com Sucesso!");

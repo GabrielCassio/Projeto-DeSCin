@@ -21,14 +21,30 @@ FetchContent_Declare(crow
 )
 FetchContent_MakeAvailable(crow)
 
-find_package(Threads REQUIRED)
-find_package(OpenSSL REQUIRED)
+FetchContent_Declare(
+    libpqxx
+    GIT_REPOSITORY https://github.com/jtv/libpqxx.git
+    GIT_TAG 7.8.1
+)
+FetchContent_MakeAvailable(libpqxx)
+
+FetchContent_Declare(
+    dotenv
+    GIT_REPOSITORY https://github.com/laserpants/dotenv-cpp.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(dotenv)
 
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
 FetchContent_MakeAvailable(googletest)
+
+find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
+
+# Sets de Arquivos para compilação ------------------------------------------------------------
 
 set(BLOCK_FILES
     backend/blockchain-core/src/block.cpp
@@ -83,7 +99,10 @@ set(UTILS_FILES
     backend/blockchain-core/src/utils/encryptation/decode_signature.cpp
 )
 
-set(DATABASE_FILES database/database.cpp)
+set(DATABASE_FILES
+    database/database.cpp
+    database/supabase/supabase.cpp
+)
 
 # Arquivo compilado da Blockchain -------------------------------------------------------------------------
 # Nome do arquivo de Execução/Compilado da blockchain
@@ -96,16 +115,22 @@ target_sources(${executable_name} PRIVATE
     ${UTILS_FILES}
 )
 target_link_libraries(${executable_name} PRIVATE
+    nlohmann_json::nlohmann_json
     OpenSSL::SSL
     OpenSSL::Crypto
     pthread
 )
+
+
+# Arquivo compilado da API -------------------------------------------------------------------------
+# Nome do arquivo de Execução/Compilado da API
 
 set(api_executable_name descin_api)
 add_executable(${api_executable_name})
 target_sources(${api_executable_name} PRIVATE
     api/main.cpp
     ${API_FILES}
+    ${DATABASE_FILES}
 )
 target_link_libraries(${api_executable_name} PRIVATE
     Threads::Threads
@@ -114,14 +139,14 @@ target_link_libraries(${api_executable_name} PRIVATE
     OpenSSL::SSL
     OpenSSL::Crypto
     pthread
+    libpqxx
+    dotenv
 )
 
-# Arquivo compilado Projeto_DeSCin ------------------------
-
+# Arquivo compilado Projeto_DeSCin -----------------------------------------------------------
 # Nome do arquivo de Execução/Compilado do Projeto_DeSCin
-set(app_executable_name projeto_descin_app)
 
-# Definindo o nome do arquivo executável do Projeto_DeSCin
+set(app_executable_name projeto_descin_app)
 add_executable(${app_executable_name})
 target_sources(${app_executable_name} PRIVATE
     main.cpp
@@ -140,8 +165,10 @@ target_link_libraries(${app_executable_name} PRIVATE
     pthread
 )
 
-enable_testing()
+# Arquivo compilado de Testes -----------------------------------------------------------
+# Nome do arquivo de Execução/Compilado dos Testes
 
+enable_testing()
 set(run_tests descin_tests)
 set(BLOCK_FILES_TEST)
 set(BLOCK_HEADER_TEST)

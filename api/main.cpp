@@ -11,14 +11,20 @@
 #include "controllers/wallets_controller.hpp"
 
 // Include Services
+#include "services/auth_service.hpp"
 #include "services/user_service.hpp"
 #include "services/projects_service.hpp"
 #include "services/wallets_service.hpp"
 
 // Include DeSCin node
 
+// Include Supabase
+#include "database/supabase/supabase.hpp"
+
 // Include libraries
 #include <crow.h>
+#include <pqxx/pqxx>
+#include <dotenv.h>
 
 /*
  * Initialize the DeSCin API
@@ -27,11 +33,17 @@
  int main(){
     // Initialize App
     crow::App<> app;
+
+    // Load environment variables
+    dotenv::init("../database/supabase/supabase.env");
+    dotenv::init(dotenv::Preserve);
+    // Initialize Supabase Connection
+    Supabase db;
     
     // Initialize Services
-    UserService user_service;
-    ProjectsService projects_service;
-    WalletsService wallets_service;
+    UserService user_service(db.getConnection());
+    ProjectsService projects_service(db.getConnection());
+    WalletsService wallets_service(db.getConnection());
     
     // Initialize Controllers
     AuthController auth_controller(user_service);

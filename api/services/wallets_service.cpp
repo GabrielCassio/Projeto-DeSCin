@@ -4,11 +4,11 @@
 #include <optional>
 #include <vector>
 
-std::optional<Wallet> WalletsService::show(const std::string id) const {
+std::optional<Wallet> WalletsService::get_by_id(const std::string id) const {
     return std::nullopt;
 }
 
-std::vector<Wallet> WalletsService::index() const {
+std::vector<Wallet> WalletsService::get_all() const {
     return {};
 }
 

@@ -1,5 +1,0 @@
-# flyctl launch added from .gitignore
-# Tools para testes em desevolvimento
-**/.zed
-**/*.http
-fly.toml

@@ -1,14 +1,22 @@
+// Include classes and Model
 #include "user_service.hpp"
 #include "../models/model.hpp"
 
+// Include libraries
 #include <optional>
 #include <vector>
 
-std::optional<User> UserService::show(const std::string id) const {
+std::optional<User> UserService::get_by_id(const std::string id) const {
+    
     return std::nullopt;
 }
 
-std::vector<User> UserService::index() const {
+std::optional<User> UserService::get_by_email(const std::string email) const {
+    
+    return std::nullopt;
+}
+
+std::vector<User> UserService::get_all() const {
     return {};
 }
 
