@@ -69,6 +69,7 @@ set(UTILS_FILES
 set(DATABASE_FILES
     database/database.cpp 
     database/key_vault.cpp
+    database/transparency_log.cpp
     )
 
 
