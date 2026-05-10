@@ -57,6 +57,7 @@ set(USER_FILES
 )
 
 set(API_FILES
+    api/routes/routes.cpp
     api/descin_node.cpp
     api/middleware/auth_middleware.cpp
 )
