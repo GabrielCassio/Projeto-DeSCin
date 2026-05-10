@@ -9,9 +9,18 @@
 // Importing the project repository
 #include "../backend/projects-core/project_state.hpp"
 
+// (UserState + KeyVault + TransparencyLog)
+#include "../backend/users-core/user_state.hpp"
+#include "../database/key_vault.hpp"
+#include "../database/transparency_log.hpp"
+
+// Geração de par de chaves no register
+#include "../backend/blockchain-core/src/utils/encryptation/generate_key_pair.hpp"
 
 // Importing std libraries
 #include <mutex>
+#include <optional>
+
 
 class DescinNode {
     private:
@@ -21,6 +30,10 @@ class DescinNode {
         Blockchain blockchain;
         ProjectState project_repo;
         Mempool mempool;
+
+        UserState users;
+        KeyVault key_vault;
+        TransparencyLog tx_log;
 
 
     public:
@@ -38,6 +51,11 @@ class DescinNode {
             std::string id_str = std::to_string(id);
             return project_repo.get_project_by_id(id_str);
         };
+
+        // User Methods
+        std::optional<std::string> register_user(const std::string& display_name, const std::string& email, const std::string& password);
+
+        std::optional<std::string> login_user(const std::string& email, const std::string& password);
 
         bool process_investment(const std::string& sender, const std::string& project_id, unsigned long amount, const std::string& signature);
 

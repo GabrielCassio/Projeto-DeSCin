@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+
 struct ApiTokenBalance {
     std::string symbol;
     long long      amount;
