@@ -163,6 +163,8 @@ target_link_libraries(${app_executable_name} PRIVATE
     OpenSSL::SSL
     OpenSSL::Crypto
     pthread
+    pqxx
+    dotenv
 )
 
 # Arquivo compilado de Testes -----------------------------------------------------------

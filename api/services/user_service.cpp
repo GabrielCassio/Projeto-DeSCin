@@ -20,8 +20,10 @@ std::vector<User> UserService::get_all() const {
 }
 
 User UserService::create(const crow::json::rvalue& body) {
-
-    return {};
+    //Mockup
+    User user;
+    
+    return user;
 }
 
 User UserService::update(const crow::json::rvalue& body, const std::string id) {

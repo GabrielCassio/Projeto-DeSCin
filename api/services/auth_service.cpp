@@ -11,10 +11,8 @@ std::string AuthService::login(const std::string& email, const std::string& pass
     auto user = user_service.get_by_email(email);
     
     if (user && user->password == password) {
-        return user->id;
+        return "";
     }
-
-    // O 
     return "";
 }
 
@@ -22,5 +20,5 @@ std::string AuthService::login(const std::string& email, const std::string& pass
  * Logs out a user by invalidating the token.
  */
 std::string AuthService::logout(const std::string& token) {
-    
+    return "";
 }

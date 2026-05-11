@@ -40,13 +40,14 @@ crow::response UserController::post(const crow::request& req) {
 
         // Validando se a requisição possui todos os campos obrigatórios
         for (const auto& field : required_fields) {
-            if (!body.has(field) || body.length() == 0 || body.length() > required_fields.size()) {
+            if (!body.has(field)) {
                 return crow::response(400, "Campo obrigatório não encontrado: " + field);
             }
         }
         // Converting body to JSON and passing to service
-        crow::json::wvalue body_json = body;
-        return service.post(body_json);
+        auto user = service.create(body);
+        
+        return crow::response(200);
         
     } catch (const std::exception& e) {
         return crow::response(500, e.what());
