@@ -4,6 +4,7 @@
 
 // Importing utils
 #include "../backend/blockchain-core/src/utils/date.hpp"
+#include "../backend/blockchain-core/src/utils/encryptation/sign_message.hpp"
 
 // Implementação do construtor do DescinNode
 DescinNode::DescinNode(int diff)
@@ -16,47 +17,79 @@ DescinNode::DescinNode(int diff)
 {
 }
 
-bool DescinNode::process_investment(const std::string& sender, const std::string& project_id, unsigned long amount, const std::string& signature) {
-    // Lockzinho
+bool DescinNode::process_investment(const std::string& sender_wallet,
+                                    const std::string& project_id,
+                                    unsigned long amount,
+                                    const std::string& password) {
     std::lock_guard<std::mutex> lock(node_mutex);
 
     try {
-
-        // Verify id project
+        // 1. Verifica se o projeto está aberto a investimento.
         if (!project_repo.is_project_active(project_id)) {
             return false;
         }
 
-        // Creating transaction
-        Transaction tx(sender, project_id, amount, date(), signature);
+        // 2. Busca a identidade do investidor.
+        const UserBody* user = users.get_user_by_wallet(sender_wallet);
+        if (!user) {
+            return false;  // wallet não cadastrada
+        }
 
+        // 3. Decifra a chave privada com a senha.
+        auto private_key = key_vault.load_private_key(sender_wallet, password);
+        if (!private_key) {
+            return false;  // senha errada
+        }
+
+        // 4. Monta a mensagem (mesmo formato que Wallet::format_data usa).
+        // Aqui sender = chave pública PEM (não o wallet_address curto)
+        // porque a is_transaction_valid espera reconstruir a chave pública
+        // a partir do campo sender_key da transação.
+        long long ts = date();
+        std::string sender_pem = user->public_key_pem;
+        std::string message = sender_pem + project_id + std::to_string(amount) + std::to_string(ts);
+
+        // 5. Assina a mensagem com a chave privada decifrada.
+        std::string signature = sign_message(*private_key, message);
+
+        // 6. Cria a transação com a chave pública PEM como sender.
+        Transaction tx(sender_pem, project_id, amount, ts, signature);
+
+        // 7. Submete à mempool (que valida a assinatura internamente).
         if (!mempool.add_transaction(tx)) {
             return false;
         }
 
-        // Memool
+        // 8. Minera o bloco e adiciona à chain.
         auto pending = mempool.get_pending_transactions();
-            auto new_block = blockchain.create_block(pending);
+        auto new_block = blockchain.create_block(pending);
+        auto mined_block = blockchain.mining_block(new_block);
 
-            auto mined_block = blockchain.mining_block(new_block);
+        if (blockchain.send_block(mined_block)) {
+            mempool.clear_pending_transactions(pending.size());
 
-            // Send block to the chain/network
-            if (blockchain.send_block(mined_block)) {
-                mempool.clear_pending_transactions(pending.size());
+            // 9. Atualiza o estado do projeto.
+            InvestimentBody inv = {
+                project_id,
+                sender_wallet,    // aqui guardamos o wallet_address (não a PEM)
+                "",
+                amount,
+                amount,
+                ts,
+                "active"
+            };
+            project_repo.update_funding(sender_wallet, inv);
 
-                InvestimentBody inv = {project_id, sender, "", amount, amount, date(), "active"};
-                project_repo.update_funding(sender, inv);
+            // 10. Log de transparência.
+            tx_log.append(tx);
 
-                tx_log.append(tx); // Log da transação para transparência 
-
-                return true;
-            }
-
-        } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
-            return false;
+            return true;
         }
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
         return false;
+    }
+    return false;
 }
 
 std::optional<std::string> DescinNode::register_user(const std::string& display_name, const std::string& email, const std::string& password) {

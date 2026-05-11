@@ -52,12 +52,17 @@ class DescinNode {
             return project_repo.get_project_by_id(id_str);
         };
 
+        auto inline get_project_by_id(const std::string& id) {
+        std::lock_guard<std::mutex> lock(node_mutex);
+        return project_repo.get_project_by_id(id);
+};
+
         // User Methods
         std::optional<std::string> register_user(const std::string& display_name, const std::string& email, const std::string& password);
 
         std::optional<std::string> login_user(const std::string& email, const std::string& password);
 
-        bool process_investment(const std::string& sender, const std::string& project_id, unsigned long amount, const std::string& signature);
+        bool process_investment(const std::string& sender_wallet, const std::string& project_id, unsigned long amount, const std::string& password);
 
         // Blockchain Methods
         inline const std::deque<std::shared_ptr<Block>>& get_chain() const {
