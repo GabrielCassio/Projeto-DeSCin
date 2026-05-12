@@ -13,6 +13,7 @@
 
 template <typename Model>
 class Service {
+protected:
     pqxx::connection& conn;
 public:
     // Default constructor and destructor

@@ -1,77 +1,33 @@
-// Include auth controller
 #include "auth_controller.hpp"
+#include "../exceptions/exceptions.hpp"
 
-// Include libraries
 #include <crow.h>
-#include <string>
 
-// Authentication controller methods
-// Autenticação com Email e Senha
 crow::response AuthController::login(const crow::request& req) {
     try {
-        // Faz o parse do body da requisição
-        // Desmembra o body da requisição
         auto body = crow::json::load(req.body);
-        // Verifica se o body existe completamente
+        if (!body) return crow::response(400, "JSON inválido");
+
         if (!body.has("email") || !body.has("password"))
-            return crow::response(400, "Falta o email ou a senha!");
-
+            return crow::response(400, "Campos obrigatórios: email, password");
         if (!body.has("role"))
-            return crow::response(400, "Falta escolher seu Cargo!");
+            return crow::response(400, "Campo obrigatório: role");
 
-        // Desestrutura o body da requisição
-        std::string email = body["email"].s();
+        std::string email    = body["email"].s();
         std::string password = body["password"].s();
-        std::string role_choice = body["RoleChoice"].s();
+        std::string role     = body["role"].s();
 
-        std::string user_id = auth_service.login(email, password);
+        auto result = auth_service.login(email, password, role);
 
-        // Valida o retorno, caso o usuário não exista ou a senha seja inválida
-        if (user_id.empty())
-            return crow::response(401, "Email ou senha inválida");
-
-        // Construindo as informações da response
         crow::json::wvalue res;
-        res["user_id"] = user_id;
-        res["description"] = "Autenticação Realizada com Sucesso!";
-        
-        // Retorna 200 com tudo OK
+        res["token"]    = result.token;
+        res["user_id"]  = result.user_id;
+        res["username"] = result.username;
+        res["email"]    = result.email;
         return crow::response(200, res);
-        
-    } catch (const std::exception& e) {
-        // Retorna um 500 do servidor
-        return crow::response(500, e.what());
-    }
-}
 
-// Login com Google
-crow::response AuthController::login_google(const crow::request& req) {
-    try {
-        return crow::response(200, "");
-    } catch (const std::exception& e) {
-        return crow::response(500, e.what());
-    }
-}
-
-crow::response AuthController::callback_google(const crow::request& req) {
-    try {
-        return crow::response(200, "");
-    } catch (const std::exception& e) {
-        return crow::response(500, e.what());
-    }
-}
-
-crow::response AuthController::login_github(const crow::request& req) {
-    try {
-        return crow::response(200, "");
-    } catch (const std::exception& e) {
-        return crow::response(500, e.what());
-    }
-}
-
-crow::response AuthController::callback_github(const crow::request& req) {
-    try {
-        return crow::response(200, "");
+    } catch (const ValidationException& e) {
+        return crow::response(401, e.what());
     } catch (const std::exception& e) {
         return crow::response(500, e.what());
     }
@@ -79,8 +35,30 @@ crow::response AuthController::callback_github(const crow::request& req) {
 
 crow::response AuthController::logout(const crow::request& req) {
     try {
-        return crow::response(200, "");
+        auto auth_header = req.get_header_value("Authorization");
+        if (auth_header.size() < 8 || auth_header.substr(0, 7) != "Bearer ")
+            return crow::response(400, "Token ausente");
+
+        auth_service.logout(auth_header.substr(7));
+        return crow::response(204);
+
     } catch (const std::exception& e) {
         return crow::response(500, e.what());
     }
+}
+
+crow::response AuthController::login_google(const crow::request&) {
+    return crow::response(501, "Não implementado");
+}
+
+crow::response AuthController::callback_google(const crow::request&) {
+    return crow::response(501, "Não implementado");
+}
+
+crow::response AuthController::login_github(const crow::request&) {
+    return crow::response(501, "Não implementado");
+}
+
+crow::response AuthController::callback_github(const crow::request&) {
+    return crow::response(501, "Não implementado");
 }

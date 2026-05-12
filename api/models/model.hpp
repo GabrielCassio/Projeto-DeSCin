@@ -42,11 +42,12 @@ struct User : Model<User> {
 
 // Carteira do usuário
 struct Wallet : Model<Wallet> {
+    int                          user_id;
     std::string                  address;
     unsigned long                balance;
     double                       balance_usd;
-    std::vector<TokenBalance> tokens;
-    std::vector<Investment>   investments;
+    std::vector<TokenBalance>    tokens;
+    std::vector<Investment>      investments;
 };
 
 // Projeto de investimento

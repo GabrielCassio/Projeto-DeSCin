@@ -8,10 +8,18 @@ void AuthRoutes::setup_routes() {
     CROW_ROUTE(app, "/auth/login")
         .methods("POST"_method)
         ([this](const crow::request& req) -> crow::response {
-        try {            
-            // Chama o método de login do controller
+        try {
             return this->controller.login(req);
-            
+        } catch (const std::exception& e) {
+            return crow::response(500, e.what());
+        }
+    });
+
+    CROW_ROUTE(app, "/auth/logout")
+        .methods("POST"_method)
+        ([this](const crow::request& req) -> crow::response {
+        try {
+            return this->controller.logout(req);
         } catch (const std::exception& e) {
             return crow::response(500, e.what());
         }

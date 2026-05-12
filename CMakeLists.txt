@@ -80,6 +80,7 @@ set(SERVICE_FILES
     api/services/user_service.cpp
     api/services/projects_service.cpp
     api/services/wallets_service.cpp
+    api/utils/password.cpp
 )
 
 set(MIDDLEWARE_FILES
