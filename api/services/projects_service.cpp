@@ -178,3 +178,25 @@ Project ProjectsService::destroy(const std::string id) {
     if (result.empty()) throw NotFoundException("Projeto não encontrado: " + id);
     return row_to_project(result[0]);
 }
+
+void ProjectsService::buy_tokens(const std::string& project_id, int user_id, int tokens, double total) const {
+    pqxx::work txn(conn);
+    // Atualiza total_funding do projeto
+    txn.exec_params(
+        "UPDATE projects SET total_funding = total_funding + $1, investors_count = investors_count + 1, updated_at = NOW() WHERE id = $2",
+        total, project_id);
+    // Desconta saldo do usuário
+    txn.exec_params(
+        "UPDATE users SET balance = balance - $1, updated_at = NOW() WHERE id = $2",
+        total, user_id);
+    // Salva/atualiza posição do usuário
+    txn.exec_params(
+        "INSERT INTO positions (user_id, project_id, tokens_owned, average_price) "
+        "VALUES ($1, $2, $3, $4) "
+        "ON CONFLICT (user_id, project_id) DO UPDATE SET "
+        "tokens_owned = positions.tokens_owned + $3, "
+        "average_price = (positions.average_price * positions.tokens_owned + $4 * $3) / (positions.tokens_owned + $3), "
+        "updated_at = NOW()",
+        user_id, project_id, tokens, total / tokens);
+    txn.commit();
+}

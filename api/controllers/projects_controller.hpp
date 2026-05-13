@@ -16,6 +16,7 @@ public:
     crow::response get_all(const crow::request& req) const override;
     crow::response post(const crow::request& req) override;
     crow::response put(const crow::request& req, const std::string& id) override;
+    crow::response buy(const crow::request& req, const std::string& id);
     crow::response del(const crow::request& req, const std::string& id) override;
 };
 

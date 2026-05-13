@@ -34,40 +34,29 @@ export const transactionsService = {
     }
   },
 
-  async buy(payload: BuyPayload): Promise<Transaction> {
-    if (USE_MOCKS) {
-      await new Promise(r => setTimeout(r, 1200));
-      return {
-        hash: `0x${Math.random().toString(16).slice(2).padEnd(64, '0')}`,
-        type: 'buy',
-        ticker: payload.ticker,
-        amount: payload.amount,
-        value: payload.amount * 5,
-        timestamp: new Date().toISOString(),
-        status: 'confirmed',
-      };
-    }
+  async buy(payload: BuyPayload & { projectId: number; price: number }): Promise<Transaction> {
     try {
-      const investPayload: ApiInvestPayload = {
-        sender: getWalletId(),
-        amount: payload.amount,
-        signature: '',
-      };
-      await api.post<void>(
-        `/api/projects/${encodeURIComponent(payload.ticker)}/invest`,
-        investPayload,
-      );
+      const userId = localStorage.getItem('user_id');
+      const res = await api.post(`/projects/${payload.projectId}/buy`, {
+        user_id: parseInt(userId ?? '0'),
+        tokens: payload.amount,
+        price: payload.price,
+      });
+      const total = res.data.total;
+      // Atualiza balance local
+      const currentBalance = parseFloat(localStorage.getItem('user_balance') ?? '0');
+      localStorage.setItem('user_balance', String(currentBalance - total));
       return {
         hash: `0x${Math.random().toString(16).slice(2).padEnd(64, '0')}`,
         type: 'buy',
         ticker: payload.ticker,
         amount: payload.amount,
-        value: payload.amount,
+        value: total,
         timestamp: new Date().toISOString(),
         status: 'confirmed',
       };
     } catch (error) {
-      console.error('Failed to invest:', error);
+      console.error('Failed to buy:', error);
       throw new Error('Investment failed');
     }
   },

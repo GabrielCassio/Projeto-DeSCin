@@ -112,3 +112,26 @@ crow::response ProjectsController::del(const crow::request&, const std::string& 
         return crow::response(500, e.what());
     }
 }
+
+crow::response ProjectsController::buy(const crow::request& req, const std::string& id) {
+    try {
+        auto body = crow::json::load(req.body);
+        if (!body) return crow::response(400, "JSON inválido");
+        
+        int user_id = body["user_id"].i();
+        int tokens  = body["tokens"].i();
+        double price = body["price"].d();
+        double total = tokens * price;
+        
+        // Desconta saldo do usuário
+        service.buy_tokens(id, user_id, tokens, total);
+        
+        crow::json::wvalue res;
+        res["success"] = true;
+        res["tokens"] = tokens;
+        res["total"] = total;
+        return crow::response(200, res);
+    } catch (const std::exception& e) {
+        return crow::response(500, e.what());
+    }
+}

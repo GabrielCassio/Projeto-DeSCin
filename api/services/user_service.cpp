@@ -30,12 +30,13 @@ namespace {
         u.bio         = row[5].is_null() ? "" : row[5].as<std::string>();
         u.created_at  = row[6].as<std::string>();
         u.updated_at  = row[7].as<std::string>();
+        u.balance     = row[8].is_null() ? 0.0 : row[8].as<double>();
         return u;
     }
 
     const char* SELECT_USER =
         "SELECT id, username, email, password, roles::text, bio, "
-        "created_at::text, updated_at::text FROM users";
+        "created_at::text, updated_at::text, balance FROM users";
 }
 
 std::optional<User> UserService::get_by_id(const std::string id) const {
@@ -141,4 +142,33 @@ User UserService::destroy(const std::string id) {
     txn.commit();
     if (result.empty()) throw NotFoundException("Usuário não encontrado: " + id);
     return row_to_user(result[0]);
+}
+
+void UserService::update_balance(const std::string id, double amount) const {
+    pqxx::work txn(conn);
+    txn.exec_params(
+        "UPDATE users SET balance = $1, updated_at = NOW() WHERE id = $2",
+        amount, id);
+    txn.commit();
+}
+
+std::string UserService::get_positions(const std::string id) const {
+    pqxx::work txn(conn);
+    auto r = txn.exec_params(
+        "SELECT p.project_id, pr.name, p.tokens_owned, p.average_price "
+        "FROM positions p JOIN projects pr ON p.project_id = pr.id "
+        "WHERE p.user_id = $1", id);
+    txn.commit();
+    std::string json = "[";
+    bool first = true;
+    for (const auto& row : r) {
+        if (!first) json += ",";
+        json += "{\"project_id\":" + std::to_string(row[0].as<int>()) +
+                ",\"project_name\":\"" + row[1].as<std::string>() + "\"" +
+                ",\"tokens_owned\":" + std::to_string(row[2].as<int>()) +
+                ",\"average_price\":" + std::to_string(row[3].as<double>()) + "}";
+        first = false;
+    }
+    json += "]";
+    return json;
 }

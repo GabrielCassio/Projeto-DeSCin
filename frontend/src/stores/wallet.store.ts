@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { WalletData, Asset, Transaction } from '../types';
 import { walletService } from '../services/wallet';
+import api from '../services/api';
 import { generateHash } from '../utils/format';
 import { useProjectStore } from './project.store';
 
@@ -31,14 +32,41 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
   fetch: async () => {
     set({ loading: true, error: null });
     try {
-      const data = await walletService.getWallet();
-      set({ ...data, loading: false, lastSync: Date.now() });
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
+        const [userRes, posRes] = await Promise.all([
+          api.get(`/users/${userId}`),
+          api.get(`/users/${userId}/positions`),
+        ]);
+        const balance = userRes.data?.balance ?? 0;
+        const positions = posRes.data ?? [];
+        const assets = positions.map((p: any) => ({
+          ticker: `PROJ:${p.project_name.replace(/\s+/g, '').toUpperCase().slice(0, 8)}${p.project_id}`,
+          projectName: p.project_name,
+          tokensOwned: p.tokens_owned,
+          averagePrice: p.average_price,
+          currentValue: p.tokens_owned * p.average_price,
+          change24h: 0,
+          pnl: 0,
+          pnlPercent: 0,
+          priceHistory: [],
+        }));
+        const totalInvested = assets.reduce((s: number, a: any) => s + a.currentValue, 0);
+        set({ availableBalance: balance, totalValue: balance + totalInvested,
+          totalInvested, assets, loading: false, lastSync: Date.now() });
+      } else {
+        set({ loading: false });
+      }
     } catch {
       set({ loading: false, error: 'Falha ao carregar carteira' });
     }
   },
 
   deposit: (amount, method) => {
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+      api.post(`/users/${userId}/deposit`, { amount }).catch(console.error);
+    }
     const tx: Transaction = {
       hash: generateHash(), type: 'deposit', amount, value: amount,
       timestamp: new Date().toISOString(), status: 'confirmed',

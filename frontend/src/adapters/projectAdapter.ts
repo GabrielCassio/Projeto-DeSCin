@@ -32,7 +32,11 @@ const AREA_MAP: Record<string, Area> = {
 
 export function adaptProjectFromApi(p: ApiProjectRaw): Project {
   const area = AREA_MAP[p.knowledge_area?.toLowerCase()] ?? 'Tecnologia';
-  const ticker = `PROJ:${p.name.replace(/\s+/g, '').toUpperCase().slice(0, 8)}${p.id}`;
+  // Gera ticker limpo baseado no id e primeiras letras do nome sem acentos
+  const cleanName = p.name
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6);
+  const ticker = `PROJ:${cleanName}${p.id}`;
   const totalSupply = p.target_funding > 0 && p.initial_token_price > 0
     ? Math.round(p.target_funding / p.initial_token_price) : 100000;
   const availableTokens = Math.max(0, totalSupply - (p.investors_count * 10));

@@ -11,6 +11,7 @@ namespace {
         j["username"]   = u.username;
         j["email"]      = u.email;
         j["bio"]        = u.bio;
+        j["balance"]    = u.balance;
         j["created_at"] = u.created_at;
         j["updated_at"] = u.updated_at;
         std::vector<crow::json::wvalue> roles;
@@ -86,6 +87,34 @@ crow::response UserController::del(const crow::request&, const std::string& id) 
         return crow::response(204);
     } catch (const NotFoundException& e) {
         return crow::response(404, e.what());
+    } catch (const std::exception& e) {
+        return crow::response(500, e.what());
+    }
+}
+
+crow::response UserController::deposit(const crow::request& req, const std::string& id) {
+    try {
+        auto body = crow::json::load(req.body);
+        if (!body) return crow::response(400, "JSON inválido");
+        double amount = body["amount"].d();
+        if (amount <= 0) return crow::response(400, "Valor inválido");
+        auto user = service.get_by_id(id);
+        if (!user) return crow::response(404, "Usuário não encontrado");
+        double new_balance = user->balance + amount;
+        service.update_balance(id, new_balance);
+        crow::json::wvalue res;
+        res["balance"] = new_balance;
+        res["user_id"] = id;
+        return crow::response(200, res);
+    } catch (const std::exception& e) {
+        return crow::response(500, e.what());
+    }
+}
+
+crow::response UserController::get_positions(const crow::request& req, const std::string& id) {
+    try {
+        auto json = service.get_positions(id);
+        return crow::response(200, json);
     } catch (const std::exception& e) {
         return crow::response(500, e.what());
     }

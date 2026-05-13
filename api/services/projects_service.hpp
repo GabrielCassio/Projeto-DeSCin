@@ -18,6 +18,7 @@ public:
 
     std::optional<Project> get_by_id(const std::string id) const override;
     std::vector<Project> get_all() const override;
+    void buy_tokens(const std::string& project_id, int user_id, int tokens, double total) const;
     std::vector<Project> get_by_filters(const std::string& status,
                                         const std::string& knowledge_area) const;
     Project create(const crow::json::rvalue& body) override;

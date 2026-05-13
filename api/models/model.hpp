@@ -38,6 +38,7 @@ struct User : Model<User> {
     std::string password;
     std::vector<std::string> role_choice;
     std::string bio;
+    double balance = 0.0;
 };
 
 // Carteira do usuário

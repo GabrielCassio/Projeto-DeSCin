@@ -4,6 +4,7 @@ import { CheckCircle, XCircle, Clock, Eye, ChevronDown, ChevronUp, ExternalLink 
 import { AppLayout } from '../../components/layout/AppLayout';
 import { useProjectStore } from '../../stores/project.store';
 import { useProjectsStore } from '../../stores/projects.store';
+import { projectsService } from '../../services/projects';
 import { useAuthStore } from '../../stores/auth.store';
 import { useNotificationStore } from '../../stores/notification.store';
 import { toast } from '../../components/ui/Toast';
@@ -246,16 +247,21 @@ export default function Curadoria() {
     fetchProjects();
   }
   const { user, hasRole } = useAuthStore();
-  const { projects: localProjects, approveProject, rejectProject, addProject } = useProjectStore();
+  const { projects: localProjects, approveProject, rejectProject } = useProjectStore();
   
-  // Merge API projects into local store
-  const allProjects = [...localProjects];
-  apiProjects.forEach(ap => {
-    if (!allProjects.find(p => p.name === ap.name)) {
-      addProject(ap as any);
-    }
-  });
-  const projects = allProjects;
+  // Usa projetos da API diretamente
+  const projects = apiProjects.length > 0 ? apiProjects.map(p => ({
+    ...p,
+    priceHistory: [],
+    openPrice: p.currentPrice,
+    circulatingSupply: p.totalSupply - p.availableTokens,
+    holders: p.investors_count ?? 0,
+    marketCap: p.currentPrice * p.totalSupply,
+    volume24h: p.volume,
+    change7d: 0,
+    volatility: 0.015,
+    liquidity: 1000,
+  })) : localProjects;
   const push = useNotificationStore(s => s.push);
   const navigate = useNavigate();
 
@@ -279,6 +285,12 @@ export default function Curadoria() {
 
   const handleApprove = (project: LiveProject) => {
     if (!user) return;
+    (async () => {
+      try {
+        const id = parseInt(project.ticker.replace(/\D/g, ''));
+        if (id) await projectsService.update(id, { ...project, status: 'approved' });
+      } catch(e) { console.error('Erro ao aprovar no banco:', e); }
+    })();
     approveProject(project.ticker, user.id, user.name);
     push({ type: 'approved', title: 'Projeto aprovado', message: `${project.name} agora está no mercado.` });
     toast('success', `${project.name} aprovado e publicado no mercado!`, 'Aprovado');

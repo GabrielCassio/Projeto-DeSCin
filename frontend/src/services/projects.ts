@@ -25,13 +25,13 @@ export const projectsService = {
 
   async create(project: Partial<Project>): Promise<Project> {
     const payload = adaptProjectToApi(project);
-    const res = await api.post('/projects/', payload);
+    const res = await api.post('/projects', payload);
     return adaptProjectFromApi(res.data);
   },
 
   async update(id: number, project: Partial<Project>): Promise<Project> {
     const payload = adaptProjectToApi(project);
-    const res = await api.put(`/projects/${id}/`, payload);
+    const res = await api.put(`/projects/${id}`, payload);
     return adaptProjectFromApi(res.data);
   },
 };

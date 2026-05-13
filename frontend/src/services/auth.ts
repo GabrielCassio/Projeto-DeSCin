@@ -20,6 +20,13 @@ export const authService = {
         createdAt: new Date().toISOString(),
       };
       localStorage.setItem('auth_token', token);
+      localStorage.setItem('user_id', String(data.user_id));
+      // Busca balance do usuário
+      try {
+        const userRes = await api.get(`/users/${data.user_id}`);
+        const balance = userRes.data?.balance ?? 0;
+        localStorage.setItem('user_balance', String(balance));
+      } catch {}
       return { user, token };
     } catch {
       return null;

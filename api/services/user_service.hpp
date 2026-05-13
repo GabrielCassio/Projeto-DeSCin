@@ -24,6 +24,8 @@ public:
     std::optional<User> get_by_email(const std::string email) const;
     User create(const crow::json::rvalue& body) override;
     User update(const crow::json::rvalue& body, const std::string id) override;
+    void update_balance(const std::string id, double amount) const;
+    std::string get_positions(const std::string id) const;
     User destroy(const std::string id) override;
 
 };

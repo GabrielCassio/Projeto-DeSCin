@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FeaturedProjectCard } from './FeaturedProjectCard';
 import { useProjectStore } from '../../stores/project.store';
+import { useEffect } from 'react';
 import { getProjectGradient } from '../../utils/color';
 import type { FeaturedProject } from '../../mocks/dashboard';
 
@@ -22,7 +23,8 @@ function sortProjects(projects: FeaturedProject[], tab: Tab) {
 
 export function FeaturedProjects() {
   const [tab, setTab] = useState<Tab>('alta');
-  const liveProjects = useProjectStore(s => s.projects);
+  const { projects: liveProjects, fetchProjects, fetched } = useProjectStore();
+  useEffect(() => { if (!fetched) fetchProjects(); }, [fetched, fetchProjects]);
 
   const featured: FeaturedProject[] = liveProjects
     .filter(p => p.status === 'approved')

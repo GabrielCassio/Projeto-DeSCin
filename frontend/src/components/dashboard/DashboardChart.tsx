@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { PeriodSelector } from './PeriodSelector';
-import { MOCK_PORTFOLIO_HISTORY } from '../../mocks/data';
-import { filterPortfolioHistory } from '../../utils/period';
+import { useWalletStore } from '../../stores/wallet.store';
 import type { Period } from '../../types';
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
@@ -23,8 +22,14 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
 
 export function DashboardChart() {
   const [period, setPeriod] = useState('1M');
-  const filtered = filterPortfolioHistory(MOCK_PORTFOLIO_HISTORY, period as Period);
-  const data = filtered.map(p => ({ date: p.timestamp, value: p.value }));
+  const balance = useWalletStore(s => s.availableBalance);
+  // Gera histórico simples baseado no saldo atual
+  const today = new Date();
+  const data = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (29 - i));
+    return { date: d.toISOString().slice(0, 10), value: balance };
+  });
 
   return (
     <div>

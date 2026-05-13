@@ -285,7 +285,8 @@ export default function Projeto() {
     if (!project || !canBuy) return;
     setBuying(true);
     try {
-      await transactionsService.buy({ ticker: project.ticker, amount: qty });
+      const projectId = parseInt(project.ticker.replace(/\D/g, '')) || 0;
+      await transactionsService.buy({ ticker: project.ticker, amount: qty, projectId, price: project.currentPrice });
       optimisticBuy(project.ticker, project.name, qty, total, project.currentPrice);
       setModalOpen(false);
       toast('success', `${formatNumber(qty)} tokens adicionados à sua carteira.`, 'Compra realizada!');

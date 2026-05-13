@@ -17,7 +17,7 @@ import { useWalletStore } from '../stores/wallet.store';
 import { useProjectStore } from '../stores/project.store';
 import { formatCurrency, formatDateTime, truncateHash } from '../utils/format';
 import { getProjectGradient, getTickerInitials } from '../utils/color';
-import { MOCK_PORTFOLIO_HISTORY } from '../mocks/data';
+
 import type { Transaction, PortfolioPoint, Period } from '../types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -190,7 +190,16 @@ export default function Wallet() {
   const [txFilter, setTxFilter]         = useState<TxFilter>('all');
   const [hoveredAsset, setHoveredAsset] = useState<string | null>(null);
 
-  const chartData = useMemo(() => filterByPeriod(MOCK_PORTFOLIO_HISTORY, period), [period]);
+  const balance = useWalletStore(s => s.availableBalance);
+  const chartData = useMemo(() => {
+    const today = new Date();
+    const days = period === '1D' ? 1 : period === '7D' ? 7 : period === '1M' ? 30 : period === '3M' ? 90 : period === '1A' ? 365 : 365;
+    return Array.from({ length: days }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(d.getDate() - (days - 1 - i));
+      return { timestamp: d.toISOString().slice(0, 10), value: balance };
+    });
+  }, [period, balance]);
   const firstVal  = chartData[0]?.value ?? 0;
   const lastVal   = chartData[chartData.length - 1]?.value ?? 0;
   const chartPct  = firstVal ? ((lastVal - firstVal) / firstVal) * 100 : 0;
